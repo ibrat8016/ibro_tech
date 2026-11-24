@@ -1,0 +1,2396 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'unsafe-inline'; style-src 'unsafe-inline'; img-src https: data: blob:; connect-src 'none'; font-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'">
+<meta name="referrer" content="no-referrer">
+<title>IBRAT MARKET</title>
+<style>
+:root{
+  --bg:#f5f6f8; --card:#fff; --text:#16181d; --muted:#6b7280; --line:#e5e7eb;
+  --accent:#2563eb; --accent2:#1d4ed8; --ok:#16a34a; --bad:#dc2626; --warn:#f59e0b;
+  --shadow:0 1px 3px rgba(0,0,0,.06),0 6px 20px rgba(0,0,0,.05); --r:14px;
+}
+*{box-sizing:border-box}
+body{margin:0;font-family:system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif;background:var(--bg);color:var(--text)}
+button{font:inherit;cursor:pointer}
+input,select,textarea{font:inherit}
+a{color:inherit}
+.wrap{max-width:1240px;margin:0 auto;padding:0 16px}
+header{background:#0f172a;color:#fff;position:sticky;top:0;z-index:20}
+.hbar{display:flex;align-items:center;gap:16px;height:64px}
+.logo{font-weight:800;font-size:22px;letter-spacing:.3px;user-select:none;cursor:default}
+.logo span{color:#60a5fa}
+.search{flex:1;display:flex}
+.search input{width:100%;padding:10px 14px;border-radius:10px;border:0;outline:none}
+.cartbtn{background:var(--accent);color:#fff;border:0;border-radius:10px;padding:10px 16px;font-weight:600;white-space:nowrap}
+.cartbtn b{background:#fff;color:var(--accent);border-radius:20px;padding:0 8px;margin-left:6px}
+.hero{background:linear-gradient(120deg,#1e3a8a,#2563eb 55%,#0ea5e9);color:#fff;border-radius:var(--r);padding:28px;margin:20px 0;display:flex;justify-content:space-between;align-items:center;gap:20px;flex-wrap:wrap}
+.hero h1{margin:0 0 6px;font-size:28px}
+.hero p{margin:0;opacity:.9}
+.badges{display:flex;gap:10px;flex-wrap:wrap}
+.badges div{background:rgba(255,255,255,.15);padding:8px 12px;border-radius:10px;font-size:14px}
+.cats{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px}
+.chip{border:1px solid var(--line);background:var(--card);padding:8px 14px;border-radius:999px;font-weight:500}
+.chip.on{background:var(--text);color:#fff;border-color:var(--text)}
+.toolbar{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-bottom:16px;color:var(--muted);font-size:14px}
+.toolbar select{padding:8px 10px;border-radius:10px;border:1px solid var(--line);background:var(--card)}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:16px;margin-bottom:40px}
+.card{background:var(--card);border-radius:var(--r);box-shadow:var(--shadow);display:flex;flex-direction:column;overflow:hidden;transition:transform .15s}
+.card:hover{transform:translateY(-3px)}
+.pic{height:190px;display:flex;align-items:center;justify-content:center;background:linear-gradient(180deg,#f8fafc,#eef2f7);padding:12px;cursor:pointer}
+.pic svg,.pic img{max-width:100%;max-height:100%}
+.pic img{object-fit:contain}
+.cbody{padding:14px;display:flex;flex-direction:column;gap:6px;flex:1}
+.brand{font-size:12px;font-weight:700;color:var(--accent);text-transform:uppercase;letter-spacing:.5px}
+.pname{font-weight:600;line-height:1.3;cursor:pointer}
+.specs{font-size:13px;color:var(--muted);line-height:1.4}
+.price{font-size:20px;font-weight:800;margin-top:auto}
+.stock{font-size:12px;color:var(--ok)}
+.stock.no{color:var(--bad)}
+.buy{background:var(--accent);color:#fff;border:0;border-radius:10px;padding:10px;font-weight:600}
+.buy:hover{background:var(--accent2)}
+.buy:disabled{background:#cbd5e1;cursor:not-allowed}
+.empty{padding:40px;text-align:center;color:var(--muted)}
+/* drawer & modal */
+.overlay{position:fixed;inset:0;background:rgba(15,23,42,.5);display:none;z-index:50}
+.overlay.show{display:block}
+.drawer{position:fixed;top:0;right:0;height:100%;width:min(420px,100%);background:var(--card);z-index:60;transform:translateX(100%);transition:transform .2s;display:flex;flex-direction:column}
+.drawer.show{transform:none}
+.dhead{display:flex;justify-content:space-between;align-items:center;padding:16px;border-bottom:1px solid var(--line)}
+.dhead h3{margin:0}
+.x{background:none;border:0;font-size:24px;line-height:1}
+.dlist{flex:1;overflow:auto;padding:12px 16px}
+.citem{display:flex;gap:10px;align-items:center;padding:10px 0;border-bottom:1px solid var(--line)}
+.citem .mini{width:56px;height:56px;flex:none;display:flex;align-items:center;justify-content:center;background:#f1f5f9;border-radius:10px;padding:4px}
+.citem .mini svg,.citem .mini img{max-width:100%;max-height:100%}
+.citem .info{flex:1;font-size:14px}
+.qty{display:flex;align-items:center;gap:6px}
+.qty button{width:28px;height:28px;border-radius:8px;border:1px solid var(--line);background:#fff}
+.dfoot{padding:16px;border-top:1px solid var(--line);display:flex;flex-direction:column;gap:10px}
+.total{display:flex;justify-content:space-between;font-size:18px;font-weight:700}
+.field{display:flex;flex-direction:column;gap:4px;font-size:13px;color:var(--muted)}
+.field input,.field select,.field textarea{padding:10px;border:1px solid var(--line);border-radius:10px;color:var(--text);background:#fff}
+.modal{position:fixed;left:50%;top:50%;transform:translate(-50%,-50%);background:var(--card);border-radius:var(--r);z-index:70;width:min(720px,calc(100% - 32px));max-height:calc(100% - 32px);overflow:auto;display:none;box-shadow:0 20px 60px rgba(0,0,0,.3)}
+.modal.show{display:block}
+.mgrid{display:grid;grid-template-columns:1fr 1fr;gap:20px;padding:20px}
+.mgrid .pic{height:280px;border-radius:12px;cursor:default}
+@media(max-width:640px){.mgrid{grid-template-columns:1fr}.hbar{gap:8px}.logo{font-size:18px}.cartbtn{padding:10px}}
+.toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:#0f172a;color:#fff;padding:12px 18px;border-radius:10px;z-index:90;opacity:0;transition:opacity .2s;pointer-events:none}
+.toast.show{opacity:1}
+footer{background:#0f172a;color:#94a3b8;padding:24px 0;font-size:14px}
+/* admin */
+#admin{display:none;padding:20px 0 60px}
+body.adm #shop{display:none}
+body.adm #admin{display:block}
+.atabs{display:flex;gap:8px;flex-wrap:wrap;margin:12px 0 20px}
+.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:12px;margin-bottom:20px}
+.kpi{background:var(--card);border-radius:var(--r);box-shadow:var(--shadow);padding:16px}
+.kpi small{color:var(--muted);display:block;margin-bottom:6px}
+.kpi b{font-size:22px}
+.pos{color:var(--ok)} .neg{color:var(--bad)}
+.panel{background:var(--card);border-radius:var(--r);box-shadow:var(--shadow);padding:16px;margin-bottom:16px;overflow:auto}
+.panel h3{margin:0 0 12px}
+table{width:100%;border-collapse:collapse;font-size:14px}
+th,td{padding:8px 10px;border-bottom:1px solid var(--line);text-align:left;white-space:nowrap}
+th{color:var(--muted);font-weight:600}
+td.num,th.num{text-align:right}
+td input{width:110px;padding:6px;border:1px solid var(--line);border-radius:8px}
+td input.wide{width:220px}
+.bars{display:flex;flex-direction:column;gap:8px}
+.bar{display:grid;grid-template-columns:90px 1fr 130px;gap:10px;align-items:center;font-size:13px}
+.bar .t{height:14px;background:#eef2f7;border-radius:7px;overflow:hidden;position:relative}
+.bar .t i{position:absolute;top:0;bottom:0;left:0;border-radius:7px}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:flex-end}
+.btn{border:1px solid var(--line);background:#fff;border-radius:10px;padding:9px 14px;font-weight:600}
+.btn.p{background:var(--accent);color:#fff;border-color:var(--accent)}
+.btn.d{color:var(--bad)}
+.login{max-width:380px;margin:60px auto;background:var(--card);padding:24px;border-radius:var(--r);box-shadow:var(--shadow);display:flex;flex-direction:column;gap:12px}
+.note{font-size:13px;color:var(--muted)}
+.aedit{display:flex;gap:6px;align-items:center;flex-wrap:wrap;background:#fff7ed;border:1px dashed #f59e0b;border-radius:10px;padding:8px;font-size:13px}
+.aedit input{width:110px;padding:6px;border:1px solid var(--line);border-radius:8px}
+.aedit .btn{padding:6px 10px}
+
+/* ===== Стиль маркетплейса ===== */
+:root{--accent:#f14635;--accent2:#d6372a;--bg:#f2f3f5;--link:#0b5fbf}
+.topbar{background:#fff;border-bottom:1px solid var(--line);font-size:13px;color:var(--muted)}
+.topbar .wrap{display:flex;gap:18px;align-items:center;height:36px;white-space:nowrap;overflow:hidden}
+.topbar select{border:0;background:none;font-weight:600;color:var(--text);cursor:pointer}
+.topbar .tb-r{margin-left:auto}
+header{background:#fff;color:var(--text);box-shadow:0 2px 8px rgba(0,0,0,.06)}
+.hbar{gap:14px}
+.logo{display:flex;align-items:center;gap:6px;color:var(--text);font-size:20px}
+.logo .mark{background:var(--accent);color:#fff;border-radius:10px;width:38px;height:38px;display:grid;place-items:center;font-size:15px;margin-right:4px}
+.logo span{color:var(--accent)}
+.search{border:2px solid var(--accent);border-radius:10px;overflow:hidden;background:#fff}
+.search input{border-radius:0}
+.search button{background:var(--accent);color:#fff;border:0;padding:0 20px;font-weight:600}
+.search button:hover{background:var(--accent2)}
+.cartbtn{background:#fff;color:var(--text);border:1px solid var(--line);height:42px}
+.cartbtn b{background:var(--accent);color:#fff}
+.menuwrap{position:relative}
+.morebtn{background:#fff;border:1px solid var(--line);border-radius:10px;width:42px;height:42px;font-size:24px;line-height:1;color:var(--text);font-weight:700}
+.morebtn:hover,.cartbtn:hover{background:#f3f4f6}
+.menu{position:absolute;right:0;top:50px;background:#fff;border-radius:12px;box-shadow:0 12px 34px rgba(0,0,0,.18);min-width:240px;padding:6px;display:none;z-index:40}
+.menu.show{display:block}
+.menu button{display:flex;gap:10px;align-items:center;width:100%;text-align:left;background:none;border:0;padding:11px 12px;border-radius:8px;color:var(--text);font-size:15px}
+.menu button:hover{background:#f3f4f6}
+.menu hr{border:0;border-top:1px solid var(--line);margin:4px 0}
+.menu .who{padding:8px 12px;font-size:12px;color:var(--muted)}
+.hero{background:linear-gradient(110deg,#f14635 0%,#ff6a3d 60%,#ff9a3d 100%)}
+.layout{display:grid;grid-template-columns:230px 1fr;gap:20px;align-items:start;margin-bottom:40px}
+.side{display:flex;flex-direction:column;gap:12px;position:sticky;top:84px}
+.sidebox{background:#fff;border-radius:12px;padding:14px;box-shadow:var(--shadow)}
+.sidebox h4{margin:0 0 10px;font-size:15px}
+.side .cats{flex-direction:column;gap:2px;margin:0}
+.side .chip{border:0;background:none;text-align:left;padding:8px 10px;border-radius:8px;color:var(--text)}
+.side .chip:hover{background:#f3f4f6}
+.side .chip.on{background:#fff1ef;color:var(--accent);font-weight:600}
+.sidebox select,.sidebox input{width:100%;padding:8px;border:1px solid var(--line);border-radius:8px;background:#fff}
+.prange{display:flex;gap:6px}
+.toolbar{background:#fff;border-radius:12px;padding:12px 14px;box-shadow:var(--shadow)}
+.grid{grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:12px;margin-bottom:0}
+.card{border-radius:12px;box-shadow:none;border:1px solid #eceef1}
+.card:hover{transform:none;box-shadow:0 8px 24px rgba(0,0,0,.09)}
+.pic{background:#fff}
+.brand{color:var(--muted);font-weight:600;font-size:11px}
+.pname{color:var(--link);font-weight:500;font-size:14px}
+.pname:hover{color:var(--accent)}
+.specs{font-size:12px}
+.price{font-size:20px}
+.inst{font-size:13px;color:var(--muted)}
+.inst b{background:#f2f3f5;color:var(--text);padding:2px 6px;border-radius:6px;font-weight:600}
+.buy{background:#fff;color:var(--accent);border:1px solid var(--accent)}
+.buy:hover{background:var(--accent);color:#fff}
+.buy.solid{background:var(--accent);color:#fff}
+.buy.solid:hover{background:var(--accent2)}
+.buy:disabled{background:#f3f4f6;color:#9ca3af;border-color:#e5e7eb}
+.instbox{background:#f7f8fa;border-radius:10px;padding:12px;font-size:14px}
+.instbox b{font-size:18px}
+footer{background:#fff;color:var(--muted);border-top:1px solid var(--line)}
+.btn.p{background:var(--accent);border-color:var(--accent)}
+.modal{width:min(900px,calc(100% - 32px))}
+.stars{letter-spacing:1px;white-space:nowrap}
+.stars span{color:#d1d5db}
+.stars .on{color:#f59e0b}
+.rating{font-size:13px;color:var(--muted);display:flex;gap:6px;align-items:center;flex-wrap:wrap}
+.rating a{color:var(--link)}
+.pic.big{height:340px;border-radius:12px;border:1px solid var(--line)}
+.thumbs{display:flex;gap:8px;margin-top:8px;flex-wrap:wrap}
+.thumbs figure{margin:0;width:66px;cursor:pointer;text-align:center}
+.thumbs figure img{width:66px;height:66px;object-fit:contain;border:2px solid var(--line);border-radius:8px;background:#fff;display:block}
+.thumbs figure.on img{border-color:var(--accent)}
+.thumbs figcaption{font-size:11px;color:var(--muted);margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.thumbs figure.on figcaption{color:var(--accent);font-weight:600}
+.pic.big{position:relative}
+.phnav{position:absolute;top:50%;transform:translateY(-50%);width:36px;height:36px;border-radius:50%;border:0;background:rgba(255,255,255,.9);box-shadow:var(--shadow);font-size:24px;line-height:1}
+.phnav.l{left:8px}.phnav.r{right:8px}
+.phcap{position:absolute;bottom:8px;left:50%;transform:translateX(-50%);background:rgba(15,23,42,.7);color:#fff;font-size:12px;padding:3px 10px;border-radius:999px;white-space:nowrap}
+.phman{display:flex;flex-direction:column;gap:10px}
+.phhead{display:flex;flex-direction:column;gap:2px}
+.phgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(120px,1fr));gap:8px}
+.phitem{border:1px solid var(--line);border-radius:10px;padding:6px;display:flex;flex-direction:column;gap:6px;background:#fff}
+.phitem.main{border-color:var(--accent);box-shadow:0 0 0 1px var(--accent)}
+.phimg{position:relative;height:90px;display:flex;align-items:center;justify-content:center;background:#f7f8fa;border-radius:8px;overflow:hidden}
+.phimg img{max-width:100%;max-height:100%;object-fit:contain}
+.phbadge{position:absolute;top:4px;left:4px;background:var(--accent);color:#fff;font-size:10px;padding:2px 6px;border-radius:6px}
+.phitem select{padding:5px;border:1px solid var(--line);border-radius:6px;font-size:13px}
+.phbtns{display:flex;gap:3px;flex-wrap:wrap}
+.phbtns .btn{padding:3px 7px;font-size:12px}
+.phbtns .btn:disabled{opacity:.35;cursor:default}
+.phadd{display:flex;gap:8px;align-items:flex-end;flex-wrap:wrap;background:#f7f8fa;padding:10px;border-radius:10px}
+.terms{display:flex;gap:6px;flex-wrap:wrap}
+.term{border:1px solid var(--line);background:#fff;border-radius:8px;padding:6px 12px;font-weight:600}
+.term.on{border-color:var(--accent);background:#fff1ef;color:var(--accent)}
+.revs{padding:0 20px 20px}
+.ptabs{display:flex;gap:4px;padding:0 20px;border-bottom:2px solid var(--line);margin-bottom:14px;overflow-x:auto}
+@media(max-width:500px){.ptabs{padding:0 8px}.ptabs button{padding:10px 8px!important;font-size:14px!important}.revs{padding:0 12px 16px}}
+.ptabs button{white-space:nowrap;flex:none;background:none;border:0;padding:12px 16px;font-weight:600;font-size:15px;color:var(--muted);border-bottom:3px solid transparent;margin-bottom:-2px}
+.ptabs button.on{color:var(--text);border-bottom-color:var(--accent)}
+.specs-tab .sgroup{margin-bottom:16px}
+.specs-tab h4{margin:0 0 6px;font-size:16px}
+.stable{width:100%;border-collapse:collapse;font-size:14px}
+.stable td{padding:7px 0;border-bottom:1px dotted #d1d5db;vertical-align:top;white-space:normal}
+.stable td:first-child{color:var(--muted);width:45%;padding-right:12px}
+.specs-tab .revs h3{border:0}
+/* ===== Безопасность и помощь ===== */
+.hp{position:absolute!important;left:-9999px!important;width:1px;height:1px;opacity:0}
+.vbadge{background:#dcfce7;color:#166534;font-size:11px;font-weight:700;padding:2px 7px;border-radius:999px}
+.alertbox{background:#fef2f2;border:1px solid #fecaca;color:#991b1b;border-radius:12px;padding:12px 14px;margin-bottom:16px;display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.okbox{background:#f0fdf4;border:1px solid #bbf7d0;color:#166534;border-radius:12px;padding:12px 14px;margin-bottom:12px}
+.seclist{line-height:1.7;padding-left:18px}
+.au-alert td{background:#fef2f2}
+.au-warn td{background:#fffbeb}
+.keybox{font-family:Consolas,monospace;font-size:18px;letter-spacing:2px;background:#f7f8fa;border:1px dashed var(--line);border-radius:10px;padding:12px;word-break:break-all;user-select:all}
+.codes{display:grid;grid-template-columns:repeat(2,1fr);gap:6px;font-family:Consolas,monospace;font-size:16px}
+.codes span{background:#f7f8fa;border-radius:8px;padding:8px;text-align:center}
+.steps{counter-reset:s;list-style:none;padding:0;display:flex;flex-direction:column;gap:8px}
+.steps li{counter-increment:s;padding-left:34px;position:relative}
+.steps li::before{content:counter(s);position:absolute;left:0;top:0;width:24px;height:24px;border-radius:50%;background:var(--accent);color:#fff;display:grid;place-items:center;font-size:13px;font-weight:700}
+.reauth{position:fixed;inset:0;background:rgba(15,23,42,.55);z-index:100;display:grid;place-items:center;padding:16px}
+.reauthbox{background:#fff;border-radius:14px;padding:20px;width:min(380px,100%);display:flex;flex-direction:column;gap:12px}
+.reauthbox h3{margin:0}
+.reauthbox input{padding:10px;border:1px solid var(--line);border-radius:10px}
+#helpFab{position:fixed;right:18px;bottom:18px;width:52px;height:52px;border-radius:50%;border:0;background:var(--accent);color:#fff;font-size:24px;font-weight:800;box-shadow:0 8px 24px rgba(241,70,53,.4);z-index:45}
+#helpFab:hover{background:var(--accent2)}
+.faq{border:1px solid var(--line);border-radius:10px;margin-bottom:8px;background:#fff}
+.faq summary{padding:12px 14px;font-weight:600;cursor:pointer;list-style:none}
+.faq summary::before{content:'＋ ';color:var(--accent)}
+.faq[open] summary::before{content:'－ '}
+.faq div{padding:0 14px 14px;font-size:14px;line-height:1.6;color:#374151}
+.contacts{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:14px}
+.contacts a,.contacts span{background:#f7f8fa;border-radius:10px;padding:10px 12px;font-size:14px;text-decoration:none;color:var(--text)}
+.hform{display:flex;flex-direction:column;gap:10px}
+.hform input,.hform select,.hform textarea{padding:10px;border:1px solid var(--line);border-radius:10px;background:#fff}
+.revs h3{display:flex;gap:10px;align-items:baseline;border-top:1px solid var(--line);padding-top:16px}
+.revform{background:#f7f8fa;border-radius:12px;padding:14px;display:flex;flex-direction:column;gap:10px;margin-bottom:16px}
+.revform input,.revform textarea{padding:10px;border:1px solid var(--line);border-radius:10px;background:#fff}
+.pickstars{display:flex;align-items:center;gap:2px}
+.pickstars button{background:none;border:0;font-size:28px;line-height:1;color:#d1d5db;padding:0 2px}
+.pickstars button.on{color:#f59e0b}
+.pickstars .note{margin-left:8px}
+.rev{border-bottom:1px solid var(--line);padding:12px 0;display:flex;flex-direction:column;gap:6px;font-size:14px}
+.rhead{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.rphoto{max-width:180px;max-height:180px;border-radius:10px;object-fit:cover;cursor:zoom-in}
+@media(max-width:860px){.layout{grid-template-columns:1fr}.side{position:static}.side .cats{flex-direction:row;flex-wrap:wrap}.topbar .tb-r{display:none}}
+@media(max-width:640px){.hbar{flex-wrap:wrap;height:auto;padding:10px 16px;gap:8px}.search{order:3;flex-basis:100%}.logo{flex:1}.cartbtn .t{display:none}.hero h1{font-size:22px}.grid{grid-template-columns:repeat(2,1fr)}.pic{height:140px}}
+</style>
+</head>
+<body>
+<div class="topbar"><div class="wrap">
+  <span>📍 <select id="city"><option>Алматы</option><option>Астана</option><option>Шымкент</option><option>Караганда</option><option>Актобе</option><option>Атырау</option><option>Павлодар</option><option>Костанай</option></select></span>
+  <span>🚚 Доставка по всему Казахстану</span>
+  <span class="tb-r">💳 Рассрочка до 24 месяцев · 🛡 Официальная гарантия</span>
+</div></div>
+<header>
+  <div class="wrap hbar">
+    <div class="logo" id="logo"><b class="mark">IB</b><b>IBRAT</b><span>MARKET</span></div>
+    <div class="search" id="searchBox"><input id="q" placeholder="Искать товары: iPhone, Samsung, ASUS..."><button id="searchGo">Найти</button></div>
+    <button class="cartbtn" id="cartBtn">🛒 <span class="t">Корзина</span><b id="cartCount">0</b></button>
+    <div class="menuwrap"><button class="morebtn" id="moreBtn" title="Меню">⋮</button><div class="menu" id="menu"></div></div>
+  </div>
+</header>
+
+<!-- ============ МАГАЗИН (видят покупатели) ============ -->
+<main id="shop" class="wrap">
+  <section class="hero">
+    <div>
+      <h1>Гаджеты и техника в Казахстане</h1>
+      <p>Смартфоны, планшеты, ноутбуки и компьютеры от Apple, Samsung, ASUS, Lenovo и других брендов</p>
+    </div>
+    <div class="badges"><div>💳 Рассрочка до 24 мес</div><div>🚚 Доставка от 1 дня</div><div>🛡 Гарантия 1 год</div></div>
+  </section>
+  <div class="layout">
+  <aside class="side">
+    <div class="sidebox"><h4>Категории</h4><div class="cats" id="cats"></div></div>
+    <div class="sidebox"><h4>Бренд</h4><select id="brandSel"></select></div>
+    <div class="sidebox"><h4>Цена, ₸</h4><div class="prange"><input type="number" id="pMin" placeholder="от"><input type="number" id="pMax" placeholder="до"></div></div>
+  </aside>
+  <section>
+  <div class="toolbar">
+    <b id="crumbCat" style="font-size:20px;color:var(--text)">Все товары</b>
+    <span id="found"></span>
+    <label style="margin-left:auto">Сортировка: <select id="sortSel">
+      <option value="pop">По популярности</option>
+      <option value="asc">Сначала дешёвые</option>
+      <option value="desc">Сначала дорогие</option>
+      <option value="name">По названию</option>
+    </select></label>
+  </div>
+  <div class="grid" id="grid"></div>
+  </section>
+  </div>
+</main>
+
+<!-- ============ АДМИНКА (только владелец) ============ -->
+<main id="admin" class="wrap"></main>
+
+<footer><div class="wrap" style="display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap">
+  <span>© IBRAT MARKET · Казахстан · Цены указаны в тенге (₸)</span>
+  <span>Оплата: Kaspi.kz · картой · наличными · рассрочка до 24 месяцев</span></div></footer>
+
+<div class="overlay" id="overlay"></div>
+<aside class="drawer" id="drawer">
+  <div class="dhead"><h3>Корзина</h3><button class="x" data-close>×</button></div>
+  <div class="dlist" id="cartList"></div>
+  <div class="dfoot" id="cartFoot"></div>
+</aside>
+<div class="modal" id="modal"></div>
+<div class="toast" id="toast"></div>
+
+<script>
+/* ---------- Хранилище ---------- */
+const LS = {
+  get(k, d){ try{ const v = localStorage.getItem('ts_'+k); return v ? JSON.parse(v) : d; }catch(e){ return d; } },
+  set(k, v){ try{ localStorage.setItem('ts_'+k, JSON.stringify(v)); return true; }catch(e){ return false; } },
+  del(k){ try{ localStorage.removeItem('ts_'+k); }catch(e){} }
+};
+const fmt = n => Math.round(n).toLocaleString('ru-RU').replace(/,/g,' ') + ' ₸';
+const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const today = () => new Date().toISOString().slice(0,10);
+
+/* ---------- Рисунки устройств (SVG) ---------- */
+function screenGrad(id, a, b){ return `<defs><linearGradient id="${id}" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="${a}"/><stop offset="1" stop-color="${b}"/></linearGradient></defs>`; }
+const DRAW = {
+  phone(c, s1, s2, id){ return `<svg viewBox="0 0 120 220" width="110">${screenGrad(id,s1,s2)}
+    <rect x="8" y="4" width="104" height="212" rx="20" fill="${c}"/>
+    <rect x="13" y="9" width="94" height="202" rx="16" fill="url(#${id})"/>
+    <rect x="45" y="15" width="30" height="8" rx="4" fill="#0b0b0b"/>
+    <circle cx="60" cy="110" r="22" fill="rgba(255,255,255,.18)"/><circle cx="60" cy="110" r="12" fill="rgba(255,255,255,.25)"/></svg>`; },
+  tablet(c, s1, s2, id){ return `<svg viewBox="0 0 200 260" width="170">${screenGrad(id,s1,s2)}
+    <rect x="6" y="6" width="188" height="248" rx="18" fill="${c}"/>
+    <rect x="14" y="14" width="172" height="232" rx="10" fill="url(#${id})"/>
+    <circle cx="100" cy="10" r="2" fill="#333"/>
+    <rect x="40" y="70" width="120" height="70" rx="10" fill="rgba(255,255,255,.18)"/>
+    <rect x="40" y="152" width="56" height="44" rx="8" fill="rgba(255,255,255,.14)"/><rect x="104" y="152" width="56" height="44" rx="8" fill="rgba(255,255,255,.14)"/></svg>`; },
+  laptop(c, s1, s2, id){ return `<svg viewBox="0 0 260 180" width="230">${screenGrad(id,s1,s2)}
+    <rect x="34" y="8" width="192" height="130" rx="8" fill="#1f2937"/>
+    <rect x="40" y="14" width="180" height="116" rx="3" fill="url(#${id})"/>
+    <path d="M10 142 H250 L238 162 Q236 166 230 166 H30 Q24 166 22 162 Z" fill="${c}"/>
+    <rect x="110" y="142" width="40" height="5" rx="2" fill="rgba(0,0,0,.18)"/>
+    <rect x="60" y="40" width="80" height="10" rx="5" fill="rgba(255,255,255,.3)"/><rect x="60" y="58" width="130" height="8" rx="4" fill="rgba(255,255,255,.18)"/><rect x="60" y="72" width="110" height="8" rx="4" fill="rgba(255,255,255,.18)"/></svg>`; },
+  desktop(c, s1, s2, id){ return `<svg viewBox="0 0 260 210" width="220">${screenGrad(id,s1,s2)}
+    <rect x="10" y="6" width="240" height="150" rx="10" fill="${c}"/>
+    <rect x="18" y="14" width="224" height="126" rx="4" fill="url(#${id})"/>
+    <path d="M110 156 H150 L158 190 H102 Z" fill="${c}" opacity=".85"/>
+    <rect x="80" y="188" width="100" height="8" rx="4" fill="${c}"/>
+    <circle cx="130" cy="77" r="26" fill="rgba(255,255,255,.18)"/></svg>`; },
+  tower(c, s1, s2, id){ return `<svg viewBox="0 0 160 220" width="130">${screenGrad(id,s1,s2)}
+    <rect x="30" y="6" width="100" height="208" rx="10" fill="${c}"/>
+    <rect x="40" y="18" width="80" height="140" rx="6" fill="url(#${id})" opacity=".9"/>
+    <circle cx="80" cy="60" r="20" fill="none" stroke="rgba(255,255,255,.5)" stroke-width="4"/>
+    <circle cx="80" cy="115" r="20" fill="none" stroke="rgba(255,255,255,.5)" stroke-width="4"/>
+    <circle cx="80" cy="185" r="6" fill="#60a5fa"/></svg>`; },
+  watch(c, s1, s2, id){ return `<svg viewBox="0 0 140 220" width="110">${screenGrad(id,s1,s2)}
+    <rect x="40" y="0" width="60" height="70" rx="10" fill="${c}" opacity=".7"/>
+    <rect x="40" y="150" width="60" height="70" rx="10" fill="${c}" opacity=".7"/>
+    <rect x="22" y="52" width="96" height="116" rx="28" fill="${c}"/>
+    <rect x="30" y="60" width="80" height="100" rx="22" fill="url(#${id})"/>
+    <rect x="118" y="88" width="8" height="22" rx="3" fill="${c}"/>
+    <text x="70" y="118" font-size="24" font-family="Arial" font-weight="700" fill="#fff" text-anchor="middle">10:09</text></svg>`; },
+  headphones(c, s1, s2, id){ return `<svg viewBox="0 0 200 200" width="170">${screenGrad(id,s1,s2)}
+    <path d="M30 120 V95 A70 70 0 0 1 170 95 V120" fill="none" stroke="${c}" stroke-width="14" stroke-linecap="round"/>
+    <rect x="14" y="110" width="44" height="72" rx="20" fill="${c}"/>
+    <rect x="142" y="110" width="44" height="72" rx="20" fill="${c}"/>
+    <rect x="22" y="120" width="28" height="52" rx="14" fill="url(#${id})"/>
+    <rect x="150" y="120" width="28" height="52" rx="14" fill="url(#${id})"/></svg>`; },
+  box(c, s1, s2, id){ return `<svg viewBox="0 0 200 200" width="160">${screenGrad(id,s1,s2)}
+    <path d="M100 20 L175 58 V142 L100 180 L25 142 V58 Z" fill="url(#${id})"/>
+    <path d="M100 20 L175 58 L100 96 L25 58 Z" fill="rgba(255,255,255,.28)"/>
+    <path d="M100 96 V180" stroke="rgba(0,0,0,.15)" stroke-width="2"/>
+    <path d="M62 39 L138 77 V104" fill="none" stroke="rgba(255,255,255,.6)" stroke-width="8"/></svg>`; },
+  buds(c, s1, s2, id){ return `<svg viewBox="0 0 200 180" width="170">${screenGrad(id,s1,s2)}
+    <rect x="40" y="40" width="120" height="110" rx="34" fill="${c}"/>
+    <line x1="40" y1="78" x2="160" y2="78" stroke="rgba(0,0,0,.12)" stroke-width="2"/>
+    <circle cx="100" cy="112" r="4" fill="url(#${id})"/>
+    <rect x="60" y="8" width="22" height="50" rx="11" fill="${c}" stroke="#d1d5db"/>
+    <rect x="118" y="8" width="22" height="50" rx="11" fill="${c}" stroke="#d1d5db"/></svg>`; }
+};
+let svgN = 0;
+function picHTML(p){
+  if(p.img) return `<img src="${esc(p.img)}" alt="${esc(p.name)}" loading="lazy" onerror="this.replaceWith(document.createRange().createContextualFragment(DRAW['${p.shape}']('${p.color}','${p.s1}','${p.s2}','g'+(++svgN))))">`;
+  return DRAW[p.shape](p.color, p.s1, p.s2, 'g'+(++svgN));
+}
+
+/* ---------- Каталог по умолчанию (цены ₸, cost = закупочная цена) ---------- */
+const BASE_CATS = {phones:'Смартфоны', tablets:'Планшеты', laptops:'Ноутбуки', pcs:'Компьютеры', gadgets:'Гаджеты'};
+let CATS = LS.get('cats', null) || {...BASE_CATS};
+const DEFAULT = [
+ // Смартфоны
+ ['iphone17pro','Apple','iPhone 17 Pro 256 ГБ','phones','phone','#c2410c','#f97316','#7c2d12',699990,585000,8,'6.3" ProMotion, A19 Pro, тройная камера 48 Мп'],
+ ['iphone17','Apple','iPhone 17 256 ГБ','phones','phone','#a5b4fc','#818cf8','#312e81',499990,420000,12,'6.3" ProMotion 120 Гц, A19, две камеры 48 Мп'],
+ ['iphone16e','Apple','iPhone 16e 128 ГБ','phones','phone','#e5e7eb','#94a3b8','#1e293b',329990,272000,10,'6.1" OLED, A18, Face ID'],
+ ['s25ultra','Samsung','Galaxy S25 Ultra 256 ГБ','phones','phone','#4b5563','#38bdf8','#1e3a8a',649990,540000,7,'6.9" AMOLED, Snapdragon 8 Elite, S Pen, 200 Мп'],
+ ['s25','Samsung','Galaxy S25 128 ГБ','phones','phone','#93c5fd','#60a5fa','#1e40af',399990,330000,9,'6.2" AMOLED 120 Гц, Galaxy AI'],
+ ['a56','Samsung','Galaxy A56 5G 256 ГБ','phones','phone','#a3e635','#4ade80','#14532d',219990,178000,15,'6.7" Super AMOLED, 5000 мАч'],
+ ['xiaomi15','Xiaomi','Xiaomi 15 256 ГБ','phones','phone','#111827','#22d3ee','#0e7490',389990,318000,6,'6.36" AMOLED, Leica камера, 90 Вт'],
+ ['redmi14','Xiaomi','Redmi Note 14 Pro 256 ГБ','phones','phone','#7c3aed','#a78bfa','#4c1d95',159990,124000,20,'6.67" AMOLED, 200 Мп, 5110 мАч'],
+ ['pixel10','Google','Pixel 10 128 ГБ','phones','phone','#fde68a','#facc15','#854d0e',429990,356000,4,'6.3" OLED, Tensor G5, Gemini'],
+ // Планшеты
+ ['ipadpro','Apple','iPad Pro 11" M5 256 ГБ','tablets','tablet','#374151','#6366f1','#0f172a',629990,525000,5,'Ultra Retina XDR OLED, чип M5'],
+ ['ipadair','Apple','iPad Air 11" M3 128 ГБ','tablets','tablet','#c4b5fd','#a78bfa','#4338ca',349990,289000,8,'Liquid Retina, чип M3, Apple Pencil Pro'],
+ ['ipad','Apple','iPad 11" A16 128 ГБ','tablets','tablet','#fbcfe8','#f472b6','#9d174d',219990,180000,11,'Liquid Retina 11", чип A16'],
+ ['tabs10','Samsung','Galaxy Tab S10+ 256 ГБ','tablets','tablet','#6b7280','#2dd4bf','#134e4a',499990,410000,4,'12.4" AMOLED 120 Гц, S Pen в комплекте'],
+ ['tabs10fe','Samsung','Galaxy Tab S10 FE 128 ГБ','tablets','tablet','#9ca3af','#38bdf8','#075985',249990,203000,9,'10.9" 90 Гц, IP68, S Pen'],
+ ['xpad7','Xiaomi','Xiaomi Pad 7 256 ГБ','tablets','tablet','#475569','#fb923c','#9a3412',179990,142000,10,'11.2" 3.2K 144 Гц, Snapdragon 7+ Gen 3'],
+ ['lenovotab','Lenovo','Lenovo Tab P12 128 ГБ','tablets','tablet','#64748b','#34d399','#065f46',149990,117000,7,'12.7" 3K, 4 динамика JBL'],
+ // Ноутбуки
+ ['mbair','Apple','MacBook Air 13" M4 16/256 ГБ','laptops','laptop','#cbd5e1','#38bdf8','#1d4ed8',549990,458000,6,'13.6" Liquid Retina, M4, до 18 ч работы'],
+ ['mbpro','Apple','MacBook Pro 14" M5 16/512 ГБ','laptops','laptop','#6b7280','#a855f7','#1e1b4b',899990,752000,3,'14.2" XDR, M5, 24 ч автономности'],
+ ['rogstrix','ASUS','ROG Strix G16 Core Ultra 9 / RTX 5070 Ti','laptops','laptop','#1f2937','#ef4444','#450a0a',989990,820000,3,'16" 2.5K 240 Гц, Core Ultra 9 275HX, 32 ГБ, 1 ТБ SSD'],
+ ['zenbook','ASUS','Zenbook 14 OLED Core Ultra 7','laptops','laptop','#334155','#22d3ee','#164e63',499990,412000,5,'14" 3K OLED, 16 ГБ, 1 ТБ, 1.2 кг'],
+ ['vivobook','ASUS','Vivobook 15 Core i5 16/512','laptops','laptop','#94a3b8','#60a5fa','#1e3a8a',279990,226000,10,'15.6" FHD, Core i5, 16 ГБ'],
+ ['legion5','Lenovo','Legion 5 Ryzen 7 / RTX 5060','laptops','laptop','#374151','#3b82f6','#172554',749990,620000,4,'15.1" 2.5K OLED 165 Гц, 32 ГБ'],
+ ['thinkpad','Lenovo','ThinkPad E14 Gen 6 Core Ultra 7','laptops','laptop','#111827','#94a3b8','#334155',449990,368000,5,'14" WUXGA, 16 ГБ, военный стандарт'],
+ ['xps13','Dell','XPS 13 Snapdragon X Elite','laptops','laptop','#d1d5db','#f0abfc','#86198f',689990,571000,2,'13.4" 2.8K OLED, 16 ГБ, Copilot+'],
+ ['hpvictus','HP','Victus 15 Ryzen 5 / RTX 4050','laptops','laptop','#1e293b','#2dd4bf','#134e4a',429990,350000,6,'15.6" 144 Гц, 16 ГБ, 512 ГБ'],
+ ['acer5','Acer','Aspire 5 Core i5 8/512','laptops','laptop','#9ca3af','#93c5fd','#1e40af',249990,199000,12,'15.6" FHD IPS, Wi-Fi 6'],
+ // Компьютеры
+ ['imac','Apple','iMac 24" M4 16/256 ГБ','pcs','desktop','#93c5fd','#38bdf8','#0c4a6e',799990,665000,3,'24" Retina 4.5K, M4, Magic Keyboard'],
+ ['macmini','Apple','Mac mini M4 16/256 ГБ','pcs','tower','#d1d5db','#94a3b8','#475569',329990,272000,6,'Чип M4, 16 ГБ, Thunderbolt 4'],
+ ['rogpc','ASUS','ROG Strix G16CH i7 / RTX 4070','pcs','tower','#111827','#ef4444','#7f1d1d',899990,748000,2,'Core i7, 32 ГБ, 1 ТБ SSD, RGB'],
+ ['legiontower','Lenovo','Legion Tower 5 Ryzen 7 / RTX 5070','pcs','tower','#1f2937','#3b82f6','#1e3a8a',849990,705000,2,'Ryzen 7, 32 ГБ DDR5, 1 ТБ'],
+ ['hpaio','HP','HP All-in-One 27" Core i5','pcs','desktop','#e5e7eb','#a78bfa','#5b21b6',459990,376000,4,'27" FHD, 16 ГБ, 512 ГБ SSD'],
+ // Гаджеты
+ ['aw11','Apple','Apple Watch Series 11 46 мм','gadgets','watch','#1f2937','#f43f5e','#881337',229990,188000,9,'Always-On Retina, ЭКГ, GPS'],
+ ['gw8','Samsung','Galaxy Watch8 44 мм','gadgets','watch','#6b7280','#22c55e','#14532d',159990,128000,8,'Super AMOLED, BioActive датчик'],
+ ['airpods','Apple','AirPods Pro 3','gadgets','buds','#ffffff','#38bdf8','#0369a1',129990,103000,15,'Активное шумоподавление, USB-C'],
+ ['buds3','Samsung','Galaxy Buds3 Pro','gadgets','buds','#e5e7eb','#a78bfa','#4c1d95',99990,78000,12,'ANC, Hi-Fi 24 бит, IP57'],
+ ['sonyxm6','Sony','WH-1000XM6','gadgets','headphones','#1f2937','#f59e0b','#78350f',199990,160000,5,'Лучшее шумоподавление, 30 ч'],
+].map(a => ({id:a[0],brand:a[1],name:a[2],cat:a[3],shape:a[4],color:a[5],s1:a[6],s2:a[7],price:a[8],cost:a[9],stock:a[10],specs:a[11],img:'',pop:0}));
+
+/* ---------- Полные характеристики (# группа, затем «Название: значение») ---------- */
+const SPECS = {
+iphone17pro:`# Основное
+Модель: Apple iPhone 17 Pro
+Встроенная память: 256 ГБ
+Оперативная память: 12 ГБ
+Процессор: Apple A19 Pro (6‑ядерный CPU, 6‑ядерный GPU)
+Операционная система: iOS 26
+# Экран
+Диагональ: 6.3"
+Тип: Super Retina XDR OLED, ProMotion до 120 Гц, Always‑On
+Разрешение: 2622 × 1206, 460 ppi
+Яркость: до 3000 нит (пиковая на улице)
+Защитное стекло: Ceramic Shield 2
+# Камеры
+Основная: 48 Мп Fusion, ƒ/1.78
+Сверхширокоугольная: 48 Мп, ƒ/2.2
+Телефото: 48 Мп, 4× оптический (100 мм)
+Фронтальная: 18 Мп Center Stage
+Видео: 4K Dolby Vision до 120 к/с, ProRes RAW
+# Батарея и связь
+Время работы: до 31 ч воспроизведения видео
+Зарядка: USB‑C, MagSafe / Qi2.2 до 25 Вт
+Связь: 5G, Wi‑Fi 7, Bluetooth 6, NFC
+SIM: nano‑SIM + eSIM
+# Корпус
+Материал: алюминиевый цельный корпус
+Защита от воды и пыли: IP68
+Вес: 204 г`,
+iphone17:`# Основное
+Модель: Apple iPhone 17
+Встроенная память: 256 ГБ
+Оперативная память: 8 ГБ
+Процессор: Apple A19 (6‑ядерный CPU, 5‑ядерный GPU)
+Операционная система: iOS 26
+# Экран
+Диагональ: 6.3"
+Тип: Super Retina XDR OLED, ProMotion до 120 Гц, Always‑On
+Разрешение: 2622 × 1206, 460 ppi
+Яркость: до 3000 нит
+Защитное стекло: Ceramic Shield 2
+# Камеры
+Основная: 48 Мп Fusion
+Сверхширокоугольная: 48 Мп
+Фронтальная: 18 Мп Center Stage
+Видео: 4K Dolby Vision до 60 к/с
+# Батарея и связь
+Время работы: до 30 ч воспроизведения видео
+Зарядка: USB‑C, MagSafe / Qi2.2 до 25 Вт
+Связь: 5G, Wi‑Fi 7, Bluetooth 6, NFC
+SIM: nano‑SIM + eSIM
+# Корпус
+Материал: алюминий, стекло
+Защита от воды и пыли: IP68
+Вес: 177 г`,
+iphone16e:`# Основное
+Модель: Apple iPhone 16e
+Встроенная память: 128 ГБ
+Оперативная память: 8 ГБ
+Процессор: Apple A18 (6‑ядерный CPU, 4‑ядерный GPU)
+Модем: Apple C1
+# Экран
+Диагональ: 6.1"
+Тип: Super Retina XDR OLED, 60 Гц
+Разрешение: 2532 × 1170, 460 ppi
+Защитное стекло: Ceramic Shield
+# Камеры
+Основная: 48 Мп Fusion, 2× оптического качества
+Фронтальная: 12 Мп
+Видео: 4K Dolby Vision до 60 к/с
+# Батарея и связь
+Время работы: до 26 ч воспроизведения видео
+Зарядка: USB‑C, беспроводная Qi до 7.5 Вт
+Связь: 5G, Wi‑Fi 6, Bluetooth 5.3, NFC
+# Корпус
+Разблокировка: Face ID
+Кнопки: Action Button
+Защита от воды и пыли: IP68
+Вес: 167 г`,
+s25ultra:`# Основное
+Модель: Samsung Galaxy S25 Ultra (SM‑S938)
+Встроенная память: 256 ГБ
+Оперативная память: 12 ГБ
+Процессор: Snapdragon 8 Elite for Galaxy
+Операционная система: Android 15, One UI 7
+# Экран
+Диагональ: 6.9"
+Тип: Dynamic AMOLED 2X, 1–120 Гц
+Разрешение: QHD+ 3120 × 1440
+Яркость: до 2600 нит
+Защитное стекло: Corning Gorilla Armor 2 (антибликовое)
+# Камеры
+Основная: 200 Мп, ƒ/1.7, OIS
+Сверхширокоугольная: 50 Мп
+Телефото 3×: 10 Мп
+Телефото 5×: 50 Мп, зум до 100×
+Фронтальная: 12 Мп
+Видео: 8K 30 к/с, 4K 120 к/с
+# Батарея и связь
+Аккумулятор: 5000 мАч
+Зарядка: проводная 45 Вт, беспроводная 15 Вт
+Связь: 5G, Wi‑Fi 7, Bluetooth 5.4, NFC, UWB
+# Корпус
+Материал: титановая рамка
+Стилус: S Pen встроенный
+Защита от воды и пыли: IP68
+Размеры: 162.8 × 77.6 × 8.2 мм
+Вес: 218 г`,
+s25:`# Основное
+Модель: Samsung Galaxy S25 (SM‑S931)
+Встроенная память: 128 ГБ
+Оперативная память: 12 ГБ
+Процессор: Snapdragon 8 Elite for Galaxy
+Операционная система: Android 15, One UI 7
+# Экран
+Диагональ: 6.2"
+Тип: Dynamic AMOLED 2X, 1–120 Гц
+Разрешение: FHD+ 2340 × 1080
+Защитное стекло: Corning Gorilla Glass Victus 2
+# Камеры
+Основная: 50 Мп, OIS
+Сверхширокоугольная: 12 Мп
+Телефото 3×: 10 Мп
+Фронтальная: 12 Мп
+# Батарея и связь
+Аккумулятор: 4000 мАч
+Зарядка: проводная 25 Вт, беспроводная 15 Вт
+Связь: 5G, Wi‑Fi 7, Bluetooth 5.4, NFC
+# Корпус
+Материал: алюминиевая рамка Armor Aluminum
+Защита от воды и пыли: IP68
+Размеры: 146.9 × 70.5 × 7.2 мм
+Вес: 162 г`,
+a56:`# Основное
+Модель: Samsung Galaxy A56 5G
+Встроенная память: 256 ГБ
+Оперативная память: 8 ГБ
+Процессор: Exynos 1580
+Операционная система: Android 15, One UI 7 (6 лет обновлений)
+# Экран
+Диагональ: 6.7"
+Тип: Super AMOLED, 120 Гц
+Разрешение: FHD+ 2340 × 1080
+Яркость: до 1900 нит
+Защитное стекло: Corning Gorilla Glass Victus+
+# Камеры
+Основная: 50 Мп, OIS
+Сверхширокоугольная: 12 Мп
+Макро: 5 Мп
+Фронтальная: 12 Мп
+# Батарея и связь
+Аккумулятор: 5000 мАч
+Зарядка: проводная 45 Вт
+Связь: 5G, Wi‑Fi 6E, Bluetooth 5.3, NFC
+# Корпус
+Материал: алюминиевая рамка, стекло
+Защита от воды и пыли: IP67
+Вес: 198 г`,
+xiaomi15:`# Основное
+Модель: Xiaomi 15
+Встроенная память: 256 ГБ
+Оперативная память: 12 ГБ
+Процессор: Snapdragon 8 Elite
+Операционная система: Xiaomi HyperOS 2 (Android 15)
+# Экран
+Диагональ: 6.36"
+Тип: AMOLED, 1–120 Гц
+Разрешение: 2670 × 1200
+Яркость: до 3200 нит
+# Камеры (Leica)
+Основная: 50 Мп Light Fusion 900, ƒ/1.62, OIS
+Телефото: 50 Мп, 60 мм, OIS
+Сверхширокоугольная: 50 Мп
+Фронтальная: 32 Мп
+Видео: 4K 60 к/с, Dolby Vision
+# Батарея и связь
+Аккумулятор: 5240 мАч
+Зарядка: проводная 90 Вт, беспроводная 50 Вт
+Связь: 5G, Wi‑Fi 7, Bluetooth 6.0, NFC, ИК‑порт
+# Корпус
+Защита от воды и пыли: IP68
+Вес: 191 г`,
+redmi14:`# Основное
+Модель: Xiaomi Redmi Note 14 Pro 5G
+Встроенная память: 256 ГБ
+Оперативная память: 8 ГБ
+Процессор: MediaTek Dimensity 7300‑Ultra
+Операционная система: Xiaomi HyperOS (Android 14)
+# Экран
+Диагональ: 6.67"
+Тип: AMOLED (изогнутый), 120 Гц
+Разрешение: 1.5K 2712 × 1220
+Яркость: до 3000 нит
+Защитное стекло: Corning Gorilla Glass Victus 2
+# Камеры
+Основная: 200 Мп, OIS
+Сверхширокоугольная: 8 Мп
+Макро: 2 Мп
+Фронтальная: 20 Мп
+# Батарея и связь
+Аккумулятор: 5110 мАч
+Зарядка: проводная 45 Вт
+Связь: 5G, Wi‑Fi 6, Bluetooth 5.4, NFC, ИК‑порт
+# Корпус
+Защита от воды и пыли: IP68
+Вес: 190 г`,
+pixel10:`# Основное
+Модель: Google Pixel 10
+Встроенная память: 128 ГБ
+Оперативная память: 12 ГБ
+Процессор: Google Tensor G5
+Операционная система: Android 16 (7 лет обновлений)
+# Экран
+Диагональ: 6.3"
+Тип: Actua OLED, 60–120 Гц
+Разрешение: 2424 × 1080
+Яркость: до 3000 нит
+Защитное стекло: Corning Gorilla Glass Victus 2
+# Камеры
+Основная: 48 Мп, OIS
+Сверхширокоугольная: 13 Мп
+Телефото: 10.8 Мп, 5× оптический
+Фронтальная: 10.5 Мп
+# Батарея и связь
+Аккумулятор: 4970 мАч
+Зарядка: проводная ~30 Вт, беспроводная Qi2 15 Вт (магниты Pixelsnap)
+Связь: 5G, Wi‑Fi 6E, Bluetooth 6, NFC
+# Корпус
+Защита от воды и пыли: IP68
+Вес: 204 г`,
+ipadpro:`# Основное
+Модель: Apple iPad Pro 11" (M5)
+Встроенная память: 256 ГБ
+Оперативная память: 12 ГБ
+Процессор: Apple M5
+Операционная система: iPadOS 26
+# Экран
+Диагональ: 11"
+Тип: Ultra Retina XDR (Tandem OLED), ProMotion 10–120 Гц
+Разрешение: 2420 × 1668, 264 ppi
+Яркость: 1000 нит SDR, до 1600 нит HDR
+# Камеры
+Основная: 12 Мп, LiDAR
+Фронтальная: 12 Мп Center Stage (горизонтальная)
+# Связь и порты
+Разъём: USB‑C (Thunderbolt / USB 4)
+Беспроводная связь: Wi‑Fi 7, Bluetooth 6 (Apple N1)
+Разблокировка: Face ID
+Аксессуары: Apple Pencil Pro, Magic Keyboard
+# Корпус
+Время работы: до 10 ч
+Толщина: 5.3 мм
+Вес: 444 г`,
+ipadair:`# Основное
+Модель: Apple iPad Air 11" (M3)
+Встроенная память: 128 ГБ
+Оперативная память: 8 ГБ
+Процессор: Apple M3 (8‑ядерный CPU, 9‑ядерный GPU)
+Операционная система: iPadOS
+# Экран
+Диагональ: 11"
+Тип: Liquid Retina (IPS), 60 Гц
+Разрешение: 2360 × 1640, 264 ppi
+Яркость: 500 нит
+# Камеры
+Основная: 12 Мп
+Фронтальная: 12 Мп Center Stage (горизонтальная)
+# Связь и порты
+Разъём: USB‑C
+Беспроводная связь: Wi‑Fi 6E, Bluetooth 5.3
+Разблокировка: Touch ID в верхней кнопке
+Аксессуары: Apple Pencil Pro, Magic Keyboard
+# Корпус
+Время работы: до 10 ч
+Толщина: 6.1 мм
+Вес: 460 г`,
+ipad:`# Основное
+Модель: Apple iPad 11" (A16)
+Встроенная память: 128 ГБ
+Оперативная память: 6 ГБ
+Процессор: Apple A16
+Операционная система: iPadOS
+# Экран
+Диагональ: 11"
+Тип: Liquid Retina (IPS)
+Разрешение: 2360 × 1640, 264 ppi
+Яркость: 500 нит
+# Камеры
+Основная: 12 Мп
+Фронтальная: 12 Мп Center Stage (горизонтальная)
+# Связь и порты
+Разъём: USB‑C
+Беспроводная связь: Wi‑Fi 6, Bluetooth 5.3
+Разблокировка: Touch ID в верхней кнопке
+Аксессуары: Apple Pencil (USB‑C), Magic Keyboard Folio
+# Корпус
+Время работы: до 10 ч
+Вес: 477 г`,
+tabs10:`# Основное
+Модель: Samsung Galaxy Tab S10+ (SM‑X820)
+Встроенная память: 256 ГБ (+ microSD до 1.5 ТБ)
+Оперативная память: 12 ГБ
+Процессор: MediaTek Dimensity 9300+
+Операционная система: Android 14, One UI 6.1.1
+# Экран
+Диагональ: 12.4"
+Тип: Dynamic AMOLED 2X, 120 Гц
+Разрешение: 2800 × 1752
+# Камеры
+Основная: 13 Мп + 8 Мп сверхширокоугольная
+Фронтальная: 12 Мп
+# Батарея и связь
+Аккумулятор: 10 090 мАч
+Зарядка: 45 Вт
+Беспроводная связь: Wi‑Fi 7, Bluetooth 5.3
+# Комплект и корпус
+Стилус: S Pen в комплекте
+Звук: 4 динамика AKG, Dolby Atmos
+Защита: IP68
+Толщина: 5.6 мм
+Вес: 571 г`,
+tabs10fe:`# Основное
+Модель: Samsung Galaxy Tab S10 FE (SM‑X520)
+Встроенная память: 128 ГБ (+ microSD до 2 ТБ)
+Оперативная память: 8 ГБ
+Процессор: Exynos 1580
+Операционная система: Android 15, One UI 7
+# Экран
+Диагональ: 10.9"
+Тип: TFT LCD, 90 Гц
+Разрешение: 2304 × 1440
+# Камеры
+Основная: 13 Мп
+Фронтальная: 12 Мп
+# Батарея и связь
+Аккумулятор: 8000 мАч
+Зарядка: 45 Вт
+Беспроводная связь: Wi‑Fi 6, Bluetooth 5.3
+# Комплект и корпус
+Стилус: S Pen в комплекте
+Защита: IP68
+Вес: 497 г`,
+xpad7:`# Основное
+Модель: Xiaomi Pad 7
+Встроенная память: 256 ГБ
+Оперативная память: 8 ГБ
+Процессор: Snapdragon 7+ Gen 3
+Операционная система: Xiaomi HyperOS 2
+# Экран
+Диагональ: 11.2"
+Тип: LCD, до 144 Гц
+Разрешение: 3.2K 3200 × 2136
+# Камеры
+Основная: 13 Мп
+Фронтальная: 8 Мп
+# Батарея и связь
+Аккумулятор: 8850 мАч
+Зарядка: 45 Вт
+Беспроводная связь: Wi‑Fi 6E, Bluetooth 5.4
+# Корпус
+Звук: 4 динамика, Dolby Atmos
+Толщина: 6.18 мм
+Вес: 500 г`,
+lenovotab:`# Основное
+Модель: Lenovo Tab P12 (TB370FU)
+Встроенная память: 128 ГБ (+ microSD)
+Оперативная память: 8 ГБ
+Процессор: MediaTek Dimensity 7050
+Операционная система: Android 13
+# Экран
+Диагональ: 12.7"
+Тип: LTPS IPS, 3K
+Разрешение: 2944 × 1840
+Яркость: 400 нит
+# Камеры
+Основная: 8 Мп
+Фронтальная: 13 Мп
+# Батарея и связь
+Аккумулятор: 10 200 мАч
+Зарядка: 20 Вт
+Беспроводная связь: Wi‑Fi 6, Bluetooth 5.1
+# Комплект и корпус
+Стилус: Lenovo Tab Pen Plus в комплекте
+Звук: 4 динамика JBL, Dolby Atmos
+Вес: 615 г`,
+mbair:`# Основное
+Модель: Apple MacBook Air 13" (M4, 2025)
+Процессор: Apple M4 (10‑ядерный CPU, 8‑ядерный GPU, 16‑ядерный Neural Engine)
+Оперативная память: 16 ГБ
+Накопитель: SSD 256 ГБ
+Операционная система: macOS
+# Экран
+Диагональ: 13.6"
+Тип: Liquid Retina (IPS)
+Разрешение: 2560 × 1664
+Яркость: 500 нит
+Внешние мониторы: до 2 (при открытой крышке)
+# Порты и связь
+Порты: 2 × Thunderbolt 4 (USB‑C), MagSafe 3, разъём 3.5 мм
+Беспроводная связь: Wi‑Fi 6E, Bluetooth 5.3
+Камера: 12 Мп Center Stage
+# Корпус
+Разблокировка: Touch ID
+Время работы: до 18 ч
+Вес: 1.24 кг`,
+mbpro:`# Основное
+Модель: Apple MacBook Pro 14" (M5)
+Процессор: Apple M5 (10‑ядерный CPU, 10‑ядерный GPU)
+Оперативная память: 16 ГБ
+Накопитель: SSD 512 ГБ
+Операционная система: macOS
+# Экран
+Диагональ: 14.2"
+Тип: Liquid Retina XDR (mini‑LED), ProMotion до 120 Гц
+Разрешение: 3024 × 1964
+Яркость: 1000 нит SDR, до 1600 нит HDR
+# Порты и связь
+Порты: 3 × Thunderbolt 4, HDMI, слот SDXC, MagSafe 3, 3.5 мм
+Беспроводная связь: Wi‑Fi 6E, Bluetooth 5.3
+Камера: 12 Мп Center Stage
+# Корпус
+Звук: 6 динамиков
+Время работы: до 24 ч
+Вес: 1.55 кг`,
+rogstrix:`# Основное
+Модель: ASUS ROG Strix G16 (G615, 2025)
+Процессор: Intel Core Ultra 9 275HX (24 ядра)
+Видеокарта: NVIDIA GeForce RTX 5070 Ti, 12 ГБ GDDR7
+Оперативная память: 32 ГБ DDR5
+Накопитель: SSD 1 ТБ PCIe 4.0
+Операционная система: Windows 11
+# Экран
+Диагональ: 16"
+Тип: IPS ROG Nebula, 240 Гц, 3 мс
+Разрешение: 2.5K 2560 × 1600
+# Порты и связь
+Порты: Thunderbolt 5, USB‑C, 2 × USB‑A, HDMI 2.1, RJ‑45, 3.5 мм
+Беспроводная связь: Wi‑Fi 7, Bluetooth 5.4
+# Корпус
+Аккумулятор: 90 Вт·ч
+Клавиатура: с RGB‑подсветкой
+Вес: ~2.5 кг`,
+zenbook:`# Основное
+Модель: ASUS Zenbook 14 OLED (UX3405MA)
+Процессор: Intel Core Ultra 7 155H
+Видеокарта: Intel Arc (встроенная)
+Оперативная память: 16 ГБ LPDDR5X
+Накопитель: SSD 1 ТБ
+Операционная система: Windows 11
+# Экран
+Диагональ: 14"
+Тип: OLED, 120 Гц, 100% DCI‑P3
+Разрешение: 3K 2880 × 1800
+# Порты и связь
+Порты: 2 × Thunderbolt 4, USB‑A, HDMI 2.1, 3.5 мм
+Беспроводная связь: Wi‑Fi 6E, Bluetooth 5.3
+# Корпус
+Аккумулятор: 75 Вт·ч
+Вес: 1.2 кг`,
+vivobook:`# Основное
+Модель: ASUS Vivobook 15 (X1504VA)
+Процессор: Intel Core i5‑1335U
+Видеокарта: Intel Iris Xe (встроенная)
+Оперативная память: 16 ГБ
+Накопитель: SSD 512 ГБ
+# Экран
+Диагональ: 15.6"
+Тип: IPS, 60 Гц
+Разрешение: Full HD 1920 × 1080
+# Порты и связь
+Порты: USB‑C, 2 × USB‑A, HDMI, 3.5 мм
+Беспроводная связь: Wi‑Fi, Bluetooth
+# Корпус
+Аккумулятор: 42 Вт·ч
+Вес: ~1.7 кг`,
+legion5:`# Основное
+Модель: Lenovo Legion 5 15AHP10 (2025)
+Процессор: AMD Ryzen 7 260
+Видеокарта: NVIDIA GeForce RTX 5060, 8 ГБ GDDR7
+Оперативная память: 32 ГБ DDR5
+Накопитель: SSD 1 ТБ
+Операционная система: Windows 11
+# Экран
+Диагональ: 15.1"
+Тип: OLED, 165 Гц
+Разрешение: 2.5K 2560 × 1600
+# Порты и связь
+Порты: USB‑C, USB‑A, HDMI 2.1, RJ‑45, 3.5 мм
+Беспроводная связь: Wi‑Fi 6E, Bluetooth
+# Корпус
+Аккумулятор: 80 Вт·ч
+Клавиатура: с RGB‑подсветкой
+Вес: ~1.9 кг`,
+thinkpad:`# Основное
+Модель: Lenovo ThinkPad E14 Gen 6 (Intel)
+Процессор: Intel Core Ultra 7 155H
+Видеокарта: Intel Arc (встроенная)
+Оперативная память: 16 ГБ DDR5
+Накопитель: SSD 512 ГБ
+Операционная система: Windows 11 Pro
+# Экран
+Диагональ: 14"
+Тип: IPS, антибликовый
+Разрешение: WUXGA 1920 × 1200
+# Порты и связь
+Порты: Thunderbolt 4, USB‑C, 2 × USB‑A, HDMI, RJ‑45, 3.5 мм
+Беспроводная связь: Wi‑Fi 6E, Bluetooth 5.3
+# Корпус
+Аккумулятор: 57 Вт·ч
+Надёжность: военный стандарт MIL‑STD‑810H
+Безопасность: сканер отпечатка в кнопке питания
+Вес: ~1.44 кг`,
+xps13:`# Основное
+Модель: Dell XPS 13 (9345)
+Процессор: Qualcomm Snapdragon X Elite X1E‑80‑100 (12 ядер)
+Нейропроцессор: NPU 45 TOPS (Copilot+ PC)
+Оперативная память: 16 ГБ LPDDR5x
+Накопитель: SSD 512 ГБ
+Операционная система: Windows 11
+# Экран
+Диагональ: 13.4"
+Тип: OLED, сенсорный
+Разрешение: 2.8K 2880 × 1800
+# Порты и связь
+Порты: 2 × USB‑C (USB4)
+Беспроводная связь: Wi‑Fi 7, Bluetooth 5.4
+# Корпус
+Аккумулятор: 55 Вт·ч
+Вес: 1.19 кг`,
+hpvictus:`# Основное
+Модель: HP Victus 15‑fb
+Процессор: AMD Ryzen 5 7535HS
+Видеокарта: NVIDIA GeForce RTX 4050, 6 ГБ
+Оперативная память: 16 ГБ DDR5
+Накопитель: SSD 512 ГБ
+Операционная система: Windows 11
+# Экран
+Диагональ: 15.6"
+Тип: IPS, 144 Гц
+Разрешение: Full HD 1920 × 1080
+# Порты и связь
+Порты: USB‑C, 2 × USB‑A, HDMI 2.1, RJ‑45, 3.5 мм
+Беспроводная связь: Wi‑Fi 6, Bluetooth 5.3
+# Корпус
+Аккумулятор: 70 Вт·ч
+Вес: ~2.3 кг`,
+acer5:`# Основное
+Модель: Acer Aspire 5 (A515‑58M)
+Процессор: Intel Core i5‑1335U
+Видеокарта: Intel Iris Xe (встроенная)
+Оперативная память: 8 ГБ LPDDR5
+Накопитель: SSD 512 ГБ
+# Экран
+Диагональ: 15.6"
+Тип: IPS
+Разрешение: Full HD 1920 × 1080
+# Порты и связь
+Порты: USB‑C, 2 × USB‑A, HDMI, 3.5 мм
+Беспроводная связь: Wi‑Fi 6, Bluetooth 5.1
+# Корпус
+Вес: ~1.76 кг`,
+imac:`# Основное
+Модель: Apple iMac 24" (M4)
+Процессор: Apple M4 (8‑ядерный CPU, 8‑ядерный GPU)
+Оперативная память: 16 ГБ
+Накопитель: SSD 256 ГБ
+Операционная система: macOS
+# Экран
+Диагональ: 24" (видимая область 23.5")
+Тип: Retina 4.5K
+Разрешение: 4480 × 2520
+Яркость: 500 нит
+# Порты и связь
+Порты: 2 × Thunderbolt / USB 4
+Беспроводная связь: Wi‑Fi 6E, Bluetooth 5.3
+Камера: 12 Мп Center Stage
+# Комплект
+Звук: 6 динамиков, Dolby Atmos
+В комплекте: Magic Keyboard, Magic Mouse`,
+macmini:`# Основное
+Модель: Apple Mac mini (M4)
+Процессор: Apple M4 (10‑ядерный CPU, 10‑ядерный GPU)
+Оперативная память: 16 ГБ
+Накопитель: SSD 256 ГБ
+Операционная система: macOS
+# Порты и связь
+Сзади: 3 × Thunderbolt 4, HDMI, Gigabit Ethernet
+Спереди: 2 × USB‑C, разъём 3.5 мм
+Беспроводная связь: Wi‑Fi 6E, Bluetooth 5.3
+Мониторы: до 3 одновременно
+# Корпус
+Размеры: 12.7 × 12.7 × 5 см
+Вес: 0.67 кг`,
+rogpc:`# Основное
+Модель: ASUS ROG Strix G16CH
+Процессор: Intel Core i7‑13700F (16 ядер)
+Видеокарта: NVIDIA GeForce RTX 4070, 12 ГБ
+Оперативная память: 32 ГБ DDR5
+Накопитель: SSD 1 ТБ
+Операционная система: Windows 11
+# Порты и связь
+Беспроводная связь: Wi‑Fi 6E, Bluetooth
+# Корпус
+Подсветка: ARGB`,
+legiontower:`# Основное
+Модель: Lenovo Legion Tower 5 (AMD)
+Процессор: AMD Ryzen 7 — уточните модель по коробке
+Видеокарта: NVIDIA GeForce RTX 5070, 12 ГБ
+Оперативная память: 32 ГБ DDR5
+Накопитель: SSD 1 ТБ
+Операционная система: Windows 11
+# Корпус
+Подсветка: RGB`,
+hpaio:`# Основное
+Модель: HP All‑in‑One 27‑cr0
+Процессор: Intel Core i5‑1335U
+Оперативная память: 16 ГБ
+Накопитель: SSD 512 ГБ
+Операционная система: Windows 11
+# Экран
+Диагональ: 27"
+Тип: IPS
+Разрешение: Full HD 1920 × 1080
+# Порты и связь
+Камера: 5 Мп
+Беспроводная связь: Wi‑Fi 6, Bluetooth
+# Комплект
+В комплекте: клавиатура и мышь`,
+aw11:`# Основное
+Модель: Apple Watch Series 11, 46 мм (GPS)
+Процессор: Apple S10
+Встроенная память: 64 ГБ
+Корпус: алюминий
+# Экран
+Тип: Always‑On Retina LTPO3 OLED, широкий угол обзора
+Яркость: до 2000 нит
+Стекло: Ion‑X, повышенная прочность
+# Здоровье
+Датчики: ЭКГ, пульс, кислород в крови, температура
+Функции: уведомления о гипертонии, оценка сна, обнаружение падения и аварии
+# Батарея
+Время работы: до 24 ч (до 38 ч в режиме энергосбережения)
+Зарядка: быстрая
+# Защита
+Водонепроницаемость: 50 м
+Пыль: IP6X`,
+gw8:`# Основное
+Модель: Samsung Galaxy Watch8, 44 мм
+Процессор: Exynos W1000
+Оперативная память: 2 ГБ
+Встроенная память: 32 ГБ
+Операционная система: Wear OS 6, One UI 8 Watch
+# Экран
+Диагональ: 1.47"
+Тип: Super AMOLED
+Разрешение: 480 × 480
+Яркость: до 3000 нит
+Стекло: сапфировое
+# Здоровье
+Датчики: BioActive (пульс, ЭКГ, давление, состав тела)
+Функции: индекс антиоксидантов, анализ сна, тренер по бегу
+# Батарея и защита
+Аккумулятор: 435 мАч
+Защита: 5 ATM + IP68, MIL‑STD‑810H
+Вес: 34 г`,
+airpods:`# Основное
+Модель: Apple AirPods Pro 3
+Чип: Apple H2
+Тип: вкладыши, 5 размеров амбушюр (XXS–L)
+# Звук
+Шумоподавление: активное (ANC), режим прозрачности
+Пространственное аудио: да, с отслеживанием головы
+Функции: живой перевод, датчик пульса
+# Батарея
+Наушники: до 8 ч с ANC
+С кейсом: до 24 ч
+Кейс: USB‑C, MagSafe, Qi, динамик для поиска
+# Защита
+Влагозащита: IP57 (наушники и кейс)`,
+buds3:`# Основное
+Модель: Samsung Galaxy Buds3 Pro
+Тип: вкладыши «стебельки»
+Bluetooth: 5.4
+# Звук
+Динамики: 2‑полосные (10.5 мм + планарный 6.1 мм)
+Шумоподавление: адаптивное ANC
+Качество: 24 бит / 96 кГц (Samsung Seamless Codec)
+# Батарея
+Наушники: до 6 ч с ANC
+С кейсом: до 26 ч с ANC
+Кейс: USB‑C, беспроводная зарядка
+# Защита
+Влагозащита: IP57
+Вес наушника: 5.4 г`,
+sonyxm6:`# Основное
+Модель: Sony WH‑1000XM6
+Тип: полноразмерные, складные
+Bluetooth: 5.3, LDAC, Multipoint
+# Звук
+Процессоры: QN3 + V2
+Шумоподавление: активное, 12 микрофонов
+Динамики: 30 мм
+Hi‑Res Audio: да (Hi‑Res Wireless)
+# Батарея
+Время работы: до 30 ч с ANC (до 40 ч без)
+Быстрая зарядка: 3 мин = 3 ч
+Разъём: USB‑C
+# Корпус
+Вес: ~254 г`
+};
+function parseSpecs(text){
+  const groups = []; let cur = null;
+  String(text||'').split('\n').forEach(line => {
+    line = line.trim(); if(!line) return;
+    if(line.startsWith('#')){ cur = {g: line.replace(/^#+\s*/,''), rows: []}; groups.push(cur); return; }
+    if(!cur){ cur = {g: 'Основное', rows: []}; groups.push(cur); }
+    const i = line.indexOf(':');
+    cur.rows.push(i > 0 ? [line.slice(0,i).trim(), line.slice(i+1).trim()] : ['', line]);
+  });
+  return groups.filter(g => g.rows.length);
+}
+/* Память характеристик: сохраняются навсегда, даже если товар продан или удалён */
+let specLib = LS.get('specLib', {});
+const specKey = p => (p.brand+' '+p.name).toLowerCase().replace(/\s+/g,' ').trim();
+function rememberSpecs(p){ if(p && p.specText && p.specText.trim()){ specLib[specKey(p)] = p.specText; specLib['id:'+p.id] = p.specText; LS.set('specLib', specLib); } }
+
+let products = LS.get('products', null);
+if(!products){ products = DEFAULT; LS.set('products', products); }
+/* исправить старые названия и подставить характеристики, если их ещё нет */
+const RENAME = {'iPhone 17 128 ГБ':'iPhone 17 256 ГБ','ROG Strix G16 i9 / RTX 5070 Ti':'ROG Strix G16 Core Ultra 9 / RTX 5070 Ti','ThinkPad E14 Gen 6 Core i7':'ThinkPad E14 Gen 6 Core Ultra 7','Apple Watch Series 11 45 мм':'Apple Watch Series 11 46 мм'};
+products.forEach(p => {
+  if(RENAME[p.name]){ p.name = RENAME[p.name]; const d = DEFAULT.find(x=>x.id===p.id); if(d) p.specs = d.specs; }
+  if(p.specText == null) p.specText = specLib['id:'+p.id] || specLib[specKey(p)] || SPECS[p.id] || '';
+});
+LS.set('products', products);
+let cart = LS.get('cart', {});
+let orders = LS.get('orders', []);
+let expenses = LS.get('expenses', []);
+let editingId = null;
+const isAdm = () => document.body.classList.contains('adm');
+
+/* Рассрочка: наценка settings.rate % за каждый месяц */
+let settings = Object.assign({rate:3, terms:[3,6,12,24]}, LS.get('settings', {}));
+const maxTerm = () => Math.max(...settings.terms);
+function instCalc(price, n){ const total = Math.round(price*(1 + settings.rate/100*n)); return {n, total, month: Math.ceil(total/n), extra: total - price, pct: settings.rate*n}; }
+
+/* Отзывы покупателей */
+let reviews = LS.get('reviews', {});
+function ratingOf(id){ const r = reviews[id]||[]; if(!r.length) return null; return {avg: r.reduce((s,x)=>s+x.stars,0)/r.length, n: r.length}; }
+function starsHTML(v){ let s=''; for(let i=1;i<=5;i++) s += `<span class="${i<=Math.round(v)?'on':''}">★</span>`; return `<span class="stars">${s}</span>`; }
+function word(n, a, b, c){ const m10=n%10, m100=n%100; return m10===1&&m100!==11 ? a : (m10>=2&&m10<=4&&(m100<10||m100>=20)) ? b : c; }
+
+const saveAll = () => { LS.set('settings',settings); LS.set('reviews',reviews); LS.set('cats',CATS); LS.set('products',products); LS.set('cart',cart); LS.set('orders',orders); LS.set('expenses',expenses); try{ if(adminOK) signData(); }catch(e){} };
+
+/* ---------- Витрина ---------- */
+let state = {cat:'all', brand:'all', sort:'pop', q:'', min:0, max:0};
+const $ = id => document.getElementById(id);
+
+function renderCats(){
+  const all = [['all','Все товары'], ...Object.entries(CATS)];
+  $('cats').innerHTML = all.map(([k,v]) => `<button class="chip ${state.cat===k?'on':''}" data-cat="${k}">${esc(v)}</button>`).join('');
+  const brands = [...new Set(products.map(p=>p.brand))].sort();
+  $('brandSel').innerHTML = `<option value="all">Все</option>` + brands.map(b=>`<option ${state.brand===b?'selected':''}>${esc(b)}</option>`).join('');
+}
+function filtered(){
+  const q = state.q.trim().toLowerCase();
+  let list = products.filter(p =>
+    (state.cat==='all' || p.cat===state.cat) &&
+    (state.brand==='all' || p.brand===state.brand) &&
+    (!state.min || p.price>=state.min) && (!state.max || p.price<=state.max) &&
+    (!q || (p.brand+' '+p.name+' '+p.specs).toLowerCase().includes(q)));
+  const s = state.sort;
+  list.sort((a,b)=> s==='asc'? a.price-b.price : s==='desc'? b.price-a.price : s==='name'? a.name.localeCompare(b.name) : (b.pop-a.pop)||0);
+  return list;
+}
+function renderGrid(){
+  const list = filtered();
+  $('found').textContent = list.length + ' товаров';
+  $('crumbCat').textContent = state.cat==='all' ? 'Все товары' : (CATS[state.cat] || 'Все товары');
+  $('grid').innerHTML = list.length ? list.map(p => `
+    <article class="card">
+      <div class="pic" data-open="${p.id}">${picHTML(p)}</div>
+      <div class="cbody">
+        <div class="brand">${esc(p.brand)}</div>
+        <div class="pname" data-open="${p.id}">${esc(p.name)}</div>
+        <div class="specs">${esc(p.specs)}</div>
+        ${(()=>{ const r = ratingOf(p.id); return r ? `<div class="rating">${starsHTML(r.avg)} <span>${r.avg.toFixed(1)} · ${r.n} ${word(r.n,'отзыв','отзыва','отзывов')}</span></div>` : `<div class="rating"><span>Нет отзывов</span></div>`; })()}
+        <div class="price">${fmt(p.price)}</div>
+        <div class="inst"><b>${fmt(instCalc(p.price, maxTerm()).month)}</b> × ${maxTerm()} мес</div>
+        <div class="stock ${p.stock>0?'':'no'}">${p.stock>0?'В наличии':'Нет в наличии'}</div>
+        <button class="buy" data-add="${p.id}" ${p.stock>0?'':'disabled'}>В корзину</button>
+        ${adminOK ? `<div class="aedit">
+          <label>Цена ₸ <input type="number" data-qprice="${p.id}" value="${p.price}"></label>
+          <button class="btn" data-qedit="${p.id}">✎ Изменить</button></div>` : ''}
+      </div>
+    </article>`).join('') : `<div class="empty">Ничего не найдено</div>`;
+}
+/* Карточка товара: галерея, рассрочка, отзывы */
+let viewId = null, viewImg = 0, viewTerm = null, newRevStars = 5, newRevPhoto = '', viewTab = 'specs';
+function specsBlock(p){
+  const groups = parseSpecs(p.specText);
+  return `<div class="revs specs-tab">
+    ${groups.length ? groups.map(g=>`<div class="sgroup"><h4>${esc(g.g)}</h4>
+      <table class="stable">${g.rows.map(([k,v])=>`<tr><td>${esc(k)}</td><td>${esc(v)}</td></tr>`).join('')}</table></div>`).join('')
+      : `<div class="note">Характеристики пока не заполнены.</div>`}
+    <p class="note">Производитель может изменять характеристики без уведомления. Точную комплектацию уточняйте у продавца.</p>
+  </div>`;
+}
+function productTabs(p){
+  const n = (reviews[p.id]||[]).length;
+  return `<div class="ptabs">
+    <button data-ptab="specs" class="${viewTab==='specs'?'on':''}">📁 Характеристики</button>
+    <button data-ptab="reviews" class="${viewTab==='reviews'?'on':''}">💬 Отзывы${n?` (${n})`:''}</button>
+  </div>`;
+}
+function openProduct(id){
+  const p = products.find(x=>x.id===id); if(!p) return;
+  const same = viewId === id && $('modal').classList.contains('show');
+  if(!same){ viewImg = 0; viewTerm = maxTerm(); newRevStars = 5; newRevPhoto = ''; viewTab = 'specs'; }
+  if(!settings.terms.includes(viewTerm)) viewTerm = maxTerm();
+  viewId = id;
+  const st = same ? $('modal').scrollTop : 0;
+  const phs = photosOf(p);
+  if(viewImg >= phs.length) viewImg = 0;
+  const main = phs.length ? `<img src="${esc(phs[viewImg].url)}" alt="${esc(p.name)}">
+      ${phs.length>1 ? `<button class="phnav l" data-thumb="${(viewImg-1+phs.length)%phs.length}">‹</button><button class="phnav r" data-thumb="${(viewImg+1)%phs.length}">›</button>` : ''}
+      <span class="phcap">${esc(phs[viewImg].label)} · ${viewImg+1}/${phs.length}</span>` : picHTML(p);
+  const r = ratingOf(id), inst = instCalc(p.price, viewTerm);
+  const list = (reviews[id]||[]).slice().reverse();
+  $('modal').innerHTML = `
+    <div class="dhead"><h3>${esc(p.brand)} ${esc(p.name)}</h3><button class="x" data-close>×</button></div>
+    <div class="mgrid">
+      <div>
+        <div class="pic big">${main}</div>
+        ${phs.length>1 ? `<div class="thumbs">${phs.map((ph,i)=>`<figure data-thumb="${i}" class="${i===viewImg?'on':''}"><img src="${esc(ph.url)}" alt=""><figcaption>${esc(ph.label)}</figcaption></figure>`).join('')}</div>` : ''}
+      </div>
+      <div style="display:flex;flex-direction:column;gap:12px">
+        <div class="brand">${esc(CATS[p.cat]||'')} · ${esc(p.brand)}</div>
+        <div class="rating">${r ? `${starsHTML(r.avg)} <span>${r.avg.toFixed(1)} · <a href="#reviews" data-goreviews>${r.n} ${word(r.n,'отзыв','отзыва','отзывов')}</a></span>` : `<span>Нет отзывов — <a href="#reviews" data-goreviews>оставьте первый</a></span>`}</div>
+        <div class="specs" style="font-size:15px">${esc(p.specs)}</div>
+        <div class="price" style="margin-top:0;font-size:28px">${fmt(p.price)}</div>
+        <div class="instbox">
+          <div style="margin-bottom:8px">Рассрочка (+${settings.rate}% в месяц):</div>
+          <div class="terms">${settings.terms.map(n=>`<button class="term ${n===viewTerm?'on':''}" data-term="${n}">${n} мес</button>`).join('')}</div>
+          <div style="margin-top:10px"><b>${fmt(inst.month)}</b> × ${inst.n} мес</div>
+          <div class="note">Итого: ${fmt(inst.total)} · переплата ${fmt(inst.extra)} (+${inst.pct}%)</div>
+        </div>
+        <div class="stock ${p.stock>0?'':'no'}">${p.stock>0?'В наличии: '+p.stock+' шт.':'Нет в наличии'}</div>
+        <button class="buy solid" data-buynow="${p.id}" ${p.stock>0?'':'disabled'}>Купить сейчас</button>
+        <button class="buy" data-add="${p.id}" ${p.stock>0?'':'disabled'}>Добавить в корзину</button>
+        ${adminOK ? `<button class="btn" data-qedit="${p.id}" style="background:#fff7ed;border-color:#f59e0b">✎ Изменить товар (админ)</button>` : ''}
+      </div>
+    </div>
+    ${productTabs(p)}${viewTab==='specs' ? specsBlock(p) : `<div class="revs" id="reviews">
+      <h3>Отзывы ${r ? `<span class="note">${r.avg.toFixed(1)} из 5 · ${r.n} ${word(r.n,'отзыв','отзыва','отзывов')}</span>` : ''}</h3>
+      <div class="revform">
+        <b>Оставить отзыв</b>
+        <div class="pickstars">${[1,2,3,4,5].map(i=>`<button data-rstar="${i}" class="${i<=newRevStars?'on':''}" title="${i}">★</button>`).join('')}<span class="note">${['','Плохо','Так себе','Нормально','Хорошо','Отлично'][newRevStars]}</span></div>
+        <input id="rName" placeholder="Ваше имя" maxlength="40">
+        <input id="rWebsite" class="hp" tabindex="-1" autocomplete="off" aria-hidden="true">
+        <textarea id="rText" rows="3" placeholder="Расскажите о товаре: что понравилось, что нет" maxlength="1000"></textarea>
+        <div class="row" style="align-items:center">
+          <label class="btn">📷 Добавить фото<input type="file" accept="image/*" id="rPhoto" hidden></label>
+          <span id="rPhotoInfo" class="note">${newRevPhoto ? `<img src="${newRevPhoto}" style="height:40px;vertical-align:middle;border-radius:6px"> фото добавлено` : ''}</span>
+          <button class="btn p" id="rSend" style="margin-left:auto">Отправить отзыв</button>
+        </div>
+      </div>
+      ${list.length ? list.map(v=>`<div class="rev">
+          <div class="rhead"><b>${esc(v.name)}</b> ${v.verified ? '<span class="vbadge">✔ Покупатель</span>' : ''} ${starsHTML(v.stars)} <span class="note">${esc(v.date)}</span>
+            ${adminOK ? `<button class="btn d" data-rdel="${p.id}|${v.id}" style="margin-left:auto;padding:4px 10px">Удалить</button>` : ''}</div>
+          <div>${esc(v.text)}</div>
+          ${v.photo ? `<img src="${v.photo}" class="rphoto" alt="фото покупателя">` : ''}
+        </div>`).join('') : `<div class="note">Пока нет отзывов. Будьте первым!</div>`}
+    </div>`}`;
+  show('modal');
+  $('modal').scrollTop = st;
+}
+
+/* ---------- Корзина ---------- */
+function cartCount(){ return Object.values(cart).reduce((a,b)=>a+b,0); }
+function cartTotal(){ return Object.entries(cart).reduce((s,[id,q])=>{ const p=products.find(x=>x.id===id); return s+(p?p.price*q:0); },0); }
+function addToCart(id){
+  const p = products.find(x=>x.id===id); if(!p) return;
+  const cur = cart[id]||0;
+  if(cur >= p.stock){ toast('Больше нет на складе'); return; }
+  if(cur >= LIMITS.perItem){ toast(`Не больше ${LIMITS.perItem} шт. одного товара в заказе`); return; }
+  cart[id] = cur+1; saveAll(); renderCart(); toast('Добавлено: '+p.name);
+}
+function renderCart(){
+  $('cartCount').textContent = cartCount();
+  const ids = Object.keys(cart).filter(id=>products.find(p=>p.id===id));
+  $('cartList').innerHTML = ids.length ? ids.map(id => { const p = products.find(x=>x.id===id); return `
+    <div class="citem">
+      <div class="mini">${picHTML(p)}</div>
+      <div class="info"><b>${esc(p.brand)} ${esc(p.name)}</b><br>${fmt(p.price)}</div>
+      <div class="qty"><button data-dec="${id}">−</button>${cart[id]}<button data-inc="${id}">+</button></div>
+    </div>`; }).join('') : `<div class="empty">Корзина пуста</div>`;
+  $('cartFoot').innerHTML = ids.length ? `
+    <div class="total"><span>Итого</span><span>${fmt(cartTotal())}</span></div>
+    <label class="field">Имя<input id="cName" placeholder="Ваше имя"></label>
+    <label class="field">Телефон<input id="cPhone" placeholder="+7 7__ ___ __ __"></label>
+    <label class="field">Город<select id="cCity"><option>Алматы</option><option>Астана</option><option>Шымкент</option><option>Караганда</option><option>Актобе</option><option>Другой</option></select></label>
+    <label class="field">Оплата<select id="cPay"><option>Kaspi.kz</option><option>Картой при получении</option><option>Наличными</option>
+      ${settings.terms.map(n=>`<option value="inst:${n}">Рассрочка ${n} мес (+${settings.rate*n}%)</option>`).join('')}</select></label>
+    <div id="cInstInfo" class="note"></div>
+    <input id="cWebsite" class="hp" tabindex="-1" autocomplete="off" aria-hidden="true">
+    <button class="buy solid" id="checkout">Оформить заказ</button>
+    <div class="note">🔒 Мы никогда не просим код из SMS и данные карты по телефону.</div>` : '';
+}
+let checkoutBusy = false;
+async function checkout(){
+  if(checkoutBusy) return;
+  const fail = (msg, log) => { if(log) audit(log[0], log[1]); toast(msg); };
+  if($('cWebsite') && $('cWebsite').value) return fail('Заказ отклонён', ['alert','Бот: заполнено скрытое поле при оформлении заказа']);
+  if(Date.now() - cartOpenedAt < 2500) return fail('Проверьте данные и нажмите ещё раз');
+  const name = $('cName').value.trim().replace(/\s+/g,' '), phone = normPhone($('cPhone').value);
+  if(!validName(name)){ $('cName').focus(); return fail('Имя: только буквы, от 2 до 40 символов'); }
+  if(!phone){ $('cPhone').focus(); return fail('Телефон в формате +7 7XX XXX XX XX'); }
+  checkoutBusy = true;
+  try{
+    if(!(await checkIntegrity())) return fail('Оформление временно недоступно. Позвоните в магазин.', ['alert','Заказ заблокирован: цены изменены в обход админки']);
+    const now = Date.now(), times = (LS.get('ordTimes', [])||[]).filter(x => now - x < LIMITS.ordersWindowMin*60000);
+    if(times.length >= LIMITS.maxOrders) return fail(`Слишком много заказов подряд. Попробуйте через ${LIMITS.ordersWindowMin} минут`, ['warn','Превышен лимит заказов с одного устройства']);
+    if(times.length && now - Math.max(...times) < LIMITS.orderGapSec*1000) return fail('Подождите немного перед следующим заказом');
+    const items = [];
+    for(const [id, q] of Object.entries(cart)){
+      const p = products.find(x=>x.id===id), qty = Math.floor(+q);
+      if(!p || !(qty >= 1)) continue;
+      if(qty > LIMITS.perItem) return fail(`Не больше ${LIMITS.perItem} шт. «${p.name}»`, ['warn','Попытка заказать '+qty+' шт. одного товара']);
+      if(qty > p.stock) return fail(`«${p.name}» осталось только ${p.stock} шт.`);
+      items.push({id, name:p.brand+' '+p.name, qty, price:p.price, cost:p.cost});   // цены берутся из каталога, а не из корзины
+    }
+    if(!items.length) return fail('Корзина пуста');
+    const dupKey = phone + '|' + items.map(i=>i.id+'x'+i.qty).join(',');
+    if(orders.some(o => o.dupKey===dupKey && now - (o.ts||0) < 5*60000)) return fail('Такой заказ уже оформлен — мы скоро позвоним');
+    const base = items.reduce((s,i)=>s+i.price*i.qty,0), payV = $('cPay').value;
+    const n = payV.startsWith('inst:') ? +payV.slice(5) : 0;
+    if(n && !settings.terms.includes(n)) return fail('Неверный срок рассрочки', ['alert','Подменён срок рассрочки в заказе']);
+    const inst = n ? instCalc(base, n) : null;
+    const order = { id: 'Z'+now.toString().slice(-7), date: today(), ts: now, dupKey, name, phone, city:$('cCity').value,
+      pay: inst ? `Рассрочка ${n} мес: ${fmt(inst.month)}/мес` : payV,
+      items, base, instExtra: inst ? inst.extra : 0, total: inst ? inst.total : base,
+      costTotal: items.reduce((s,i)=>s+i.cost*i.qty,0), status:'Новый' };
+    items.forEach(i => { const p = products.find(x=>x.id===i.id); p.stock -= i.qty; p.pop += i.qty; });
+    orders.unshift(order); cart = {}; saveAll();
+    times.push(now); LS.set('ordTimes', times);
+    const bought = LS.get('myBought', {}); items.forEach(i => bought[i.id] = true); LS.set('myBought', bought);
+    audit('order', `Новый заказ ${order.id} на ${fmt(order.total)} (${maskPhone(phone)})`);
+    renderCart(); renderGrid(); hideAll();
+    toast('Спасибо! Заказ '+order.id+' оформлен. Мы позвоним вам.');
+  } finally { checkoutBusy = false; }
+}
+
+/* ---------- Окна ---------- */
+function show(id){ $('overlay').classList.add('show'); $(id).classList.add('show'); }
+function hideAll(){ editingId = null; ['overlay','drawer','modal'].forEach(i=>$(i).classList.remove('show')); }
+let tt; function toast(t){ $('toast').textContent=t; $('toast').classList.add('show'); clearTimeout(tt); tt=setTimeout(()=>$('toast').classList.remove('show'),2600); }
+
+document.addEventListener('click', e => {
+  const t = e.target.closest('[data-cat],[data-add],[data-open],[data-inc],[data-dec],[data-close],[data-buynow],#checkout,#overlay,#cartBtn');
+  if(!t) return;
+  if(t.dataset.buynow){ const id=t.dataset.buynow; if(!cart[id]) addToCart(id); hideAll(); renderCart(); show('drawer'); cartOpenedAt = Date.now(); return; }
+  if(t.dataset.cat){ state.cat=t.dataset.cat; renderCats(); renderGrid(); }
+  else if(t.dataset.add) addToCart(t.dataset.add);
+  else if(t.dataset.open) openProduct(t.dataset.open);
+  else if(t.dataset.inc) addToCart(t.dataset.inc);
+  else if(t.dataset.dec){ cart[t.dataset.dec]--; if(cart[t.dataset.dec]<=0) delete cart[t.dataset.dec]; saveAll(); renderCart(); }
+  else if(t.id==='checkout') checkout();
+  else if(t.id==='cartBtn'){ renderCart(); show('drawer'); cartOpenedAt = Date.now(); }
+  else hideAll();
+});
+$('q').addEventListener('input', e => { state.q = e.target.value; renderGrid(); });
+$('brandSel').addEventListener('change', e => { state.brand = e.target.value; renderGrid(); });
+$('sortSel').addEventListener('change', e => { state.sort = e.target.value; renderGrid(); });
+/* Рассрочка в корзине: показать платёж в месяц */
+document.addEventListener('change', e => {
+  if(e.target.id !== 'cPay') return;
+  const v = e.target.value, n = v.startsWith('inst:') ? +v.slice(5) : 0;
+  if(!n){ $('cInstInfo').textContent = ''; return; }
+  const c = instCalc(cartTotal(), n);
+  $('cInstInfo').innerHTML = `<b style="color:var(--text);font-size:15px">${fmt(c.month)} × ${n} мес</b><br>Итого к оплате ${fmt(c.total)} (переплата ${fmt(c.extra)})`;
+});
+
+/* Карточка товара: фото, срок рассрочки, отзывы */
+document.addEventListener('click', e => {
+  const t = e.target.closest('[data-thumb],[data-term],[data-rstar],#rSend,[data-rdel],[data-goreviews],.rphoto,[data-ptab]');
+  if(!t) return;
+  if(t.dataset.ptab){ viewTab = t.dataset.ptab; openProduct(viewId); return; }
+  if(t.dataset.goreviews !== undefined){ e.preventDefault(); viewTab = 'reviews'; openProduct(viewId); $('reviews').scrollIntoView({behavior:'smooth'}); return; }
+  if(t.dataset.thumb){ viewImg = +t.dataset.thumb; openProduct(viewId); }
+  else if(t.dataset.term){ viewTerm = +t.dataset.term; openProduct(viewId); }
+  else if(t.dataset.rstar){ keepDraft(); newRevStars = +t.dataset.rstar; openProduct(viewId); restoreDraft(); }
+  else if(t.dataset.goreviews !== undefined){ e.preventDefault(); $('reviews').scrollIntoView({behavior:'smooth'}); }
+  else if(t.classList.contains('rphoto')){ window.open().document.write(`<img src="${t.src}" style="max-width:100%">`); }
+  else if(t.id==='rSend'){
+    const name = $('rName').value.trim().replace(/\s+/g,' '), text = $('rText').value.trim();
+    if($('rWebsite') && $('rWebsite').value){ audit('alert','Бот: заполнено скрытое поле в отзыве'); return toast('Отзыв отклонён'); }
+    if(!validName(name)){ $('rName').focus(); return toast('Имя: только буквы, от 2 до 40 символов'); }
+    const prob = textProblem(text, 10); if(prob){ $('rText').focus(); audit('warn', 'Отзыв отклонён: '+prob); return toast(prob); }
+    const mine = LS.get('myRevs', {}); if(mine[viewId]) return toast('Вы уже оставили отзыв на этот товар');
+    if(Date.now() - LS.get('lastRev', 0) < LIMITS.reviewGapSec*1000) return toast('Подождите минуту перед следующим отзывом');
+    const list = reviews[viewId] = reviews[viewId] || [];
+    list.push({id:'r'+Date.now(), name, stars:Math.min(5,Math.max(1,Math.round(newRevStars))), text, date:today(), photo:newRevPhoto, verified: !!LS.get('myBought', {})[viewId]});
+    mine[viewId] = true; LS.set('myRevs', mine); LS.set('lastRev', Date.now());
+    if(!LS.set('reviews', reviews)){ list.pop(); return toast('Фото слишком большое для памяти браузера — отправьте без фото'); }
+    newRevPhoto = ''; newRevStars = 5; draft = null; openProduct(viewId); renderGrid(); toast('Спасибо за отзыв!');
+  }
+  else if(t.dataset.rdel){
+    if(!adminOK) return; const [pid, rid] = t.dataset.rdel.split('|');
+    if(!confirm('Удалить этот отзыв?')) return;
+    const rv = (reviews[pid]||[]).find(v=>v.id===rid); audit('change', `Удалён отзыв «${rv ? rv.name+': '+rv.text.slice(0,40) : rid}»`);
+    reviews[pid] = (reviews[pid]||[]).filter(v=>v.id!==rid); saveAll(); refresh();
+    if($('modal').classList.contains('show') && viewId===pid) openProduct(pid);
+    toast('Отзыв удалён');
+  }
+});
+let draft = null;
+function keepDraft(){ if($('rName')) draft = {n:$('rName').value, t:$('rText').value}; }
+function restoreDraft(){ if(draft && $('rName')){ $('rName').value = draft.n; $('rText').value = draft.t; } }
+document.addEventListener('change', e => {
+  if(e.target.id !== 'rPhoto' || !e.target.files[0]) return;
+  keepDraft();
+  fileToPhoto(e.target.files[0], url => { newRevPhoto = url; openProduct(viewId); restoreDraft(); toast('Фото добавлено к отзыву'); }, 500);
+});
+
+$('pMin').addEventListener('input', e => { state.min = +e.target.value||0; renderGrid(); });
+$('pMax').addEventListener('input', e => { state.max = +e.target.value||0; renderGrid(); });
+$('searchGo').addEventListener('click', () => { state.q = $('q').value; renderGrid(); $('crumbCat').scrollIntoView({behavior:'smooth', block:'center'}); });
+$('q').addEventListener('keydown', e => { if(e.key==='Enter') $('searchGo').click(); });
+document.addEventListener('keydown', e => { if(e.key==='Escape') hideAll(); });
+
+/* =================================================================
+   АДМИНКА: прибыль и убытки. Покупатели её не видят.
+   Вход: добавить #admin в конец адреса, или 3 раза кликнуть по логотипу.
+   ================================================================= */
+async function hash(s){
+  s = 'techshop-kz::' + s;
+  if(window.crypto && crypto.subtle){
+    const b = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(s));
+    return [...new Uint8Array(b)].map(x=>x.toString(16).padStart(2,'0')).join('');
+  }
+  let h = 5381; for(const c of s) h = ((h<<5)+h) ^ c.charCodeAt(0); return 'f'+(h>>>0).toString(16);
+}
+/* =====================================================================
+   БЕЗОПАСНОСТЬ
+   ===================================================================== */
+const SEC = { iter:150000, lockFails:5, sessHours:12, rememberDays:7, idleMin:(LS.get('secCfg',{}).idleMin)||30, reauthMin:5, pending2faSec:180 };
+const enc = s => new TextEncoder().encode(s);
+const hex = b => [...new Uint8Array(b)].map(x=>x.toString(16).padStart(2,'0')).join('');
+const rndBytes = n => crypto.getRandomValues(new Uint8Array(n));
+const rndHex = n => hex(rndBytes(n));
+const hasSubtle = !!(window.crypto && crypto.subtle);
+async function sha256(s){ return hasSubtle ? hex(await crypto.subtle.digest('SHA-256', enc(s))) : hash(s); }
+async function pbkdf2(pw, salt, iter){
+  if(!hasSubtle){ let h = salt + pw; for(let i=0;i<2000;i++) h = await hash(h); return h; }
+  const k = await crypto.subtle.importKey('raw', enc(pw), 'PBKDF2', false, ['deriveBits']);
+  return hex(await crypto.subtle.deriveBits({name:'PBKDF2', hash:'SHA-256', salt:enc(salt), iterations:iter}, k, 256));
+}
+function safeEq(a, b){ if(typeof a!=='string' || typeof b!=='string' || a.length!==b.length) return false; let r = 0; for(let i=0;i<a.length;i++) r |= a.charCodeAt(i) ^ b.charCodeAt(i); return r === 0; }
+
+/* --- Журнал событий --- */
+let auditLog = LS.get('audit', []);
+const AUDIT_T = {alert:'⚠ Тревога', warn:'Внимание', login:'Вход/выход', change:'Изменение', order:'Заказ', security:'Защита', help:'Обращение'};
+function audit(type, msg){ auditLog.unshift({t:new Date().toISOString(), type, msg:String(msg).slice(0,300)}); if(auditLog.length > 500) auditLog.length = 500; LS.set('audit', auditLog); }
+
+/* --- Пароль: PBKDF2‑SHA256, 150 000 итераций, случайная соль --- */
+const hasPassword = () => !!(LS.get('pass2', null) || LS.get('pass', null));
+function pwProblems(pw){
+  const e = [];
+  if(pw.length < 8) e.push('минимум 8 символов');
+  if(!/[a-zа-яё]/i.test(pw)) e.push('нужны буквы');
+  if(!/\d/.test(pw)) e.push('нужны цифры');
+  if(/^(.)\1+$/.test(pw) || /^(12345678|123456789|password|qwerty|11111111|00000000|йцукенгш)/i.test(pw)) e.push('слишком простой');
+  return e;
+}
+async function setPassword(pw){ const salt = rndHex(16); LS.set('pass2', {salt, iter:SEC.iter, hash: await pbkdf2(pw, salt, SEC.iter)}); LS.del('pass'); }
+async function checkPassword(pw){
+  const rec = LS.get('pass2', null);
+  if(rec) return safeEq(await pbkdf2(pw, rec.salt, rec.iter), rec.hash);
+  const old = LS.get('pass', null);
+  if(old && safeEq(await hash(pw), old)){ await setPassword(pw); audit('security', 'Пароль переведён на усиленное шифрование PBKDF2'); return true; }
+  return false;
+}
+
+/* --- Блокировка подбора: 5 ошибок → 1, 2, 4, 8 … 60 минут --- */
+const lockInfo = () => LS.get('lock', {fails:0, until:0, level:0});
+const lockedFor = () => Math.max(0, Math.ceil((lockInfo().until - Date.now())/1000));
+function registerFail(){
+  const l = lockInfo(); l.fails++;
+  if(l.fails >= SEC.lockFails){ l.level = (l.level||0) + 1; const min = Math.min(60, 2 ** (l.level-1)); l.until = Date.now() + min*60000; l.fails = 0; audit('alert', `Вход заблокирован на ${min} мин: ${SEC.lockFails} неверных попыток подряд`); }
+  LS.set('lock', l); return l;
+}
+const clearFails = () => LS.set('lock', {fails:0, until:0, level:0});
+
+/* --- Сессия админа: подпись, срок действия, автовыход при бездействии --- */
+async function sessSig(s){ const rec = LS.get('pass2', {}); const t = LS.get('tfa', {}); return sha256(['sess', rec.hash, t.secret||'', s.exp, s.nonce, s.rem?1:0].join('|')); }
+async function createSession(remember){ const s = {exp: Date.now() + (remember ? SEC.rememberDays*864e5 : SEC.sessHours*36e5), nonce: rndHex(16), rem: !!remember, last: Date.now()}; s.sig = await sessSig(s); LS.set('sess', s); }
+async function verifySession(startup){
+  const s = LS.get('sess', null);
+  if(!s || !s.exp || s.exp < Date.now()) return false;
+  if(!(startup && s.rem) && Date.now() - (s.last||0) > SEC.idleMin*60000) return false;
+  return safeEq(await sessSig(s), s.sig || '');
+}
+function touchSession(){ const s = LS.get('sess', null); if(s && adminOK){ s.last = Date.now(); LS.set('sess', s); } }
+let adminOK = false;
+function setLogged(v, remember){ adminOK = v; if(v) return createSession(remember); LS.del('sess'); reauthUntil = 0; return Promise.resolve(); }
+
+/* --- Подпись цен (анти‑чит): изменение цен в обход админки блокирует заказы --- */
+let tampered = false;
+const dataSig = () => sha256(JSON.stringify(products.map(p=>[p.id, p.name, p.price, p.cost])) + '|' + JSON.stringify(settings));
+async function signData(){ LS.set('integ', await dataSig()); tampered = false; LS.del('tamperLogged'); }
+async function checkIntegrity(){
+  const s = LS.get('integ', null), cur = await dataSig();
+  if(!s){ LS.set('integ', cur); tampered = false; return true; }
+  tampered = !safeEq(s, cur);
+  if(tampered && !LS.get('tamperLogged', false)){ audit('alert', 'Цены или настройки изменены в обход панели админа — заказы остановлены'); LS.set('tamperLogged', true); }
+  return !tampered;
+}
+
+/* --- Защита через номер телефона: код из приложения на телефоне владельца (TOTP, RFC 6238) --- */
+const B32 = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ234567';
+function b32enc(bytes){ let bits = '', out = ''; bytes.forEach(b => bits += b.toString(2).padStart(8,'0')); for(let i=0; i+5<=bits.length; i+=5) out += B32[parseInt(bits.slice(i,i+5),2)]; return out; }
+function b32dec(s){ let bits = ''; s.replace(/[\s=]/g,'').toUpperCase().split('').forEach(c => { const v = B32.indexOf(c); if(v >= 0) bits += v.toString(2).padStart(5,'0'); }); const out = []; for(let i=0; i+8<=bits.length; i+=8) out.push(parseInt(bits.slice(i,i+8),2)); return new Uint8Array(out); }
+async function totp(secret, step){
+  const key = await crypto.subtle.importKey('raw', b32dec(secret), {name:'HMAC', hash:'SHA-1'}, false, ['sign']);
+  const msg = new ArrayBuffer(8), dv = new DataView(msg); dv.setUint32(0, Math.floor(step / 2**32)); dv.setUint32(4, step >>> 0);
+  const h = new Uint8Array(await crypto.subtle.sign('HMAC', key, msg)), o = h[h.length-1] & 15;
+  return String((((h[o]&127)<<24) | (h[o+1]<<16) | (h[o+2]<<8) | h[o+3]) % 1e6).padStart(6,'0');
+}
+async function checkTotp(secret, code){
+  code = String(code).replace(/\D/g,''); if(code.length !== 6) return false;
+  const s = Math.floor(Date.now()/30000);
+  for(const d of [-1,0,1]){ if(safeEq(await totp(secret, s+d), code)){ if(s+d <= LS.get('totpUsed', 0)) return false; LS.set('totpUsed', s+d); return true; } }
+  return false;
+}
+const tfa = () => LS.get('tfa', {on:false});
+function normPhone(s){ let d = String(s||'').replace(/\D/g,''); if(d.length===11 && d[0]==='8') d = '7'+d.slice(1); if(d.length===10) d = '7'+d; return (d.length===11 && d[0]==='7' && d[1]==='7') ? '+'+d : null; }
+const maskPhone = p => p ? `+7 ${p[2]}•• ••• •• ${p.slice(-2)}` : '';
+const fmtPhone = p => p ? `+7 ${p.slice(2,5)} ${p.slice(5,8)} ${p.slice(8,10)} ${p.slice(10)}` : '';
+function newRecoveryCodes(){ const out = []; for(let i=0;i<8;i++){ const s = b32enc(rndBytes(5)).slice(0,8); out.push(s.slice(0,4)+'-'+s.slice(4)); } return out; }
+const recHash = c => sha256('rec|' + c.replace(/[^A-Z0-9]/gi,'').toUpperCase());
+let pending2fa = null;   // после верного пароля ждём код с телефона
+let tfaSetup = null;     // процесс подключения телефона
+let tfaShowCodes = null; // коды восстановления показываем один раз
+
+/* --- Повторное подтверждение паролем для опасных действий --- */
+let reauthUntil = 0;
+function askPassword(reason){
+  return new Promise(res => {
+    if(Date.now() < reauthUntil) return res(true);
+    const d = document.createElement('div'); d.className = 'reauth';
+    d.innerHTML = `<div class="reauthbox"><h3>🔐 Подтвердите паролем</h3><div class="note">${esc(reason)}</div>
+      <input type="password" placeholder="Пароль администратора" autocomplete="current-password">
+      <div class="row"><button class="btn p">Подтвердить</button><button class="btn">Отмена</button></div></div>`;
+    document.body.appendChild(d);
+    const inp = d.querySelector('input'), [ok, no] = d.querySelectorAll('button'); inp.focus();
+    const done = v => { d.remove(); res(v); };
+    const go = async () => {
+      if(lockedFor()){ toast('Вход заблокирован, подождите'); return done(false); }
+      ok.disabled = true;
+      if(await checkPassword(inp.value)){ clearFails(); reauthUntil = Date.now() + SEC.reauthMin*60000; audit('security', 'Подтверждено паролем: '+reason); done(true); }
+      else { registerFail(); audit('warn', 'Неверный пароль при подтверждении: '+reason); toast('Неверный пароль'); ok.disabled = false; inp.value = ''; inp.focus(); if(lockedFor()) done(false); }
+    };
+    ok.onclick = go; no.onclick = () => done(false);
+    inp.onkeydown = e => { if(e.key==='Enter') go(); if(e.key==='Escape'){ e.stopPropagation(); done(false); } };
+  });
+}
+
+/* --- Анти‑чит для заказов и отзывов --- */
+const LIMITS = {perItem:10, maxOrders:3, ordersWindowMin:10, orderGapSec:20, reviewGapSec:60, ticketsPerHour:3};
+const validName = s => /^[A-Za-zА-Яа-яЁёӘәҒғҚқҢңӨөҰұҮүҺһІі' -]{2,40}$/.test(s);
+const BAD_WORDS = ['хуй','хуе','хуё','пизд','ебан','ебат','ёбан','бляд','сука','мудак','гандон','шлюх','долбо'];
+function textProblem(text, min){
+  if(text.length < min) return `Слишком коротко (минимум ${min} символов)`;
+  if(/(https?:\/\/|www\.|\.(com|ru|kz|net|org|me|io)\b|t\.me|wa\.me|@\w{3,})/i.test(text)) return 'Ссылки и контакты писать нельзя';
+  if(/\+?\d[\d\s\-()]{8,}\d/.test(text)) return 'Номера телефонов писать нельзя';
+  if(/(.)\1{6,}/.test(text)) return 'Похоже на спам';
+  if(text.length > 15 && (text.match(/[A-ZА-ЯЁ]/g)||[]).length > text.length*0.6) return 'Не пишите заглавными буквами';
+  const low = text.toLowerCase(); if(BAD_WORDS.some(w => low.includes(w))) return 'Есть недопустимые слова';
+  return null;
+}
+let cartOpenedAt = 0;
+function sanitizeCart(){
+  let bad = false;
+  Object.keys(cart).forEach(k => { const q = Math.floor(+cart[k]), p = products.find(x=>x.id===k);
+    if(!p || !(q >= 1)){ delete cart[k]; bad = true; } else if(q > Math.min(LIMITS.perItem, p.stock)){ cart[k] = Math.max(0, Math.min(LIMITS.perItem, p.stock)); if(!cart[k]) delete cart[k]; bad = true; } else cart[k] = q; });
+  if(bad){ LS.set('cart', cart); audit('warn', 'Корзина исправлена: найдены недопустимые количества'); }
+}
+
+/* --- Помощь: контакты магазина и обращения покупателей --- */
+let shopInfo = Object.assign({phone:'', wa:'', hours:'Ежедневно 10:00–21:00', addr:'Алматы'}, LS.get('shopInfo', {}));
+let tickets = LS.get('tickets', []);
+let helpTab = 'faq';
+
+/* Превратить файл-картинку в уменьшенное фото */
+function fileToPhoto(file, cb, max = 700){
+  if(!file || !file.type.startsWith('image/')) return toast('Это не картинка');
+  const img = new Image();
+  img.onload = () => {
+    const k = Math.min(1, max/Math.max(img.width, img.height));
+    const c = document.createElement('canvas'); c.width = Math.round(img.width*k); c.height = Math.round(img.height*k);
+    const ctx = c.getContext('2d'); ctx.fillStyle = '#fff'; ctx.fillRect(0,0,c.width,c.height); ctx.drawImage(img,0,0,c.width,c.height);
+    URL.revokeObjectURL(img.src); cb(c.toDataURL('image/jpeg', 0.82));
+  };
+  img.onerror = () => toast('Не удалось открыть картинку');
+  img.src = URL.createObjectURL(file);
+}
+let newPhoto = '';
+
+/* Окно «Добавить товар» на витрине */
+function addFormHTML(){
+  return `<div class="row">
+      <label class="field">Название *<input id="nName" placeholder="Например: Galaxy Z Fold7 512 ГБ" style="width:240px"></label>
+      <label class="field">Бренд / производитель<input id="nBrand" placeholder="Samsung" style="width:140px"></label>
+      <label class="field">Категория<select id="nCat">${Object.entries(CATS).map(([k,v])=>`<option value="${k}">${esc(v)}</option>`).join('')}</select></label>
+      <label class="field">Краткое описание<input id="nSpecs" placeholder="экран, память, камера" style="width:240px"></label>
+      <label class="field">Цена продажи, ₸ *<input type="number" id="nPrice" style="width:130px"></label>
+      <label class="field">Закупка, ₸<input type="number" id="nCost" style="width:130px"></label>
+      <label class="field">Склад, шт.<input type="number" id="nStock" value="1" style="width:80px"></label>
+      <label class="field" style="flex-basis:100%">📁 Полные характеристики (если товар уже был — подставятся из памяти)
+        <textarea id="nSpecText" rows="5" style="font-family:Consolas,monospace;font-size:13px" placeholder="# Экран&#10;Диагональ: 6.7&quot;&#10;Разрешение: 2400 × 1080&#10;# Память&#10;Встроенная память: 256 ГБ"></textarea></label>
+      <label class="btn">📷 Фото<input type="file" accept="image/*" id="nPhoto" hidden></label>
+      <span id="nPhotoInfo" class="note"></span>
+      <button class="btn p" id="nAdd">✔ Добавить товар</button>
+    </div><p class="note">* — обязательные поля. Новую категорию можно создать во вкладке «Товары и цены».</p>`;
+}
+function openAdd(){
+  if(!adminOK) return; newPhoto = ''; editingId = null;
+  $('modal').innerHTML = `<div class="dhead"><h3>➕ Новый товар</h3><button class="x" data-close>×</button></div><div style="padding:20px">${addFormHTML()}</div>`;
+  show('modal'); setTimeout(()=>$('nName').focus(), 50);
+}
+let atab = 'sum';
+
+/* Обновить экран после изменений админа */
+function refresh(){ renderCats(); if(isAdm()) renderAdmin(); else { renderGrid(); renderCart(); } if(editingId) openEdit(editingId); }
+
+/* Окно редактирования товара прямо на витрине (только админ) */
+/* ===== Фото товара: главное (p.img) + дополнительные (p.gallery) с подписями ===== */
+const PH_LABELS = ['Спереди','Сзади','Сбоку','Экран','Коробка','Комплектация','В руке','Детали','Другое'];
+const PH_MAX = 10;
+function photosOf(p){
+  const list = [];
+  if(p.img) list.push({url:p.img, label:p.imgLabel||'Спереди'});
+  (p.gallery||[]).forEach(g => { if(typeof g==='string') list.push({url:g, label:'Другое'}); else if(g && g.url) list.push({url:g.url, label:g.label||'Другое'}); });
+  return list;
+}
+function writePhotos(p, list){
+  p.img = list[0] ? list[0].url : ''; p.imgLabel = list[0] ? list[0].label : '';
+  p.gallery = list.slice(1).map(x=>({url:x.url, label:x.label}));
+}
+function savePhotos(p, list, msg){
+  const backup = photosOf(p); writePhotos(p, list);
+  if(!LS.set('products', products)){ writePhotos(p, backup); toast('Память браузера заполнена — удалите часть фото'); return; }
+  refresh(); if(msg) toast(msg);
+}
+function photoManagerHTML(p, i){
+  const list = photosOf(p);
+  return `<div class="phman">
+    <div class="phhead"><b>🖼 Фото товара (${list.length}/${PH_MAX})</b><span class="note">Первое фото — главное, его видно в каталоге</span></div>
+    ${list.length ? `<div class="phgrid">${list.map((ph,k)=>`
+      <div class="phitem ${k===0?'main':''}">
+        <div class="phimg"><img src="${esc(ph.url)}" alt="">${k===0?'<span class="phbadge">Главное</span>':''}</div>
+        <select data-phl="${i}:${k}">${[...new Set([...PH_LABELS, ph.label])].map(l=>`<option ${l===ph.label?'selected':''}>${esc(l)}</option>`).join('')}</select>
+        <div class="phbtns">
+          <button class="btn" data-ph="left:${i}:${k}" title="Левее" ${k===0?'disabled':''}>◀</button>
+          <button class="btn" data-ph="right:${i}:${k}" title="Правее" ${k===list.length-1?'disabled':''}>▶</button>
+          ${k>0?`<button class="btn" data-ph="main:${i}:${k}" title="Сделать главным">★</button>`:''}
+          <label class="btn" title="Заменить фото">🔄<input type="file" accept="image/*" data-phr="${i}:${k}" hidden></label>
+          <button class="btn d" data-ph="del:${i}:${k}" title="Удалить">🗑</button>
+        </div>
+      </div>`).join('')}</div>` : `<div class="pic">${picHTML(p)}</div><div class="note">Своих фото пока нет — показан рисунок.</div>`}
+    ${list.length < PH_MAX ? `<div class="phadd">
+      <label class="field">Что на фото?<select id="phNewLabel">${PH_LABELS.map(l=>`<option ${l===(list.length?'Сзади':'Спереди')?'selected':''}>${l}</option>`).join('')}</select></label>
+      <label class="btn p">📷 Добавить фото<input type="file" accept="image/*" multiple data-pha="${i}" hidden></label>
+    </div>` : `<div class="note">Достигнут лимит ${PH_MAX} фото.</div>`}
+    <label class="field">или добавить фото по ссылке<div class="row" style="flex-wrap:nowrap"><input id="phUrl" placeholder="https://..." style="flex:1"><button class="btn" data-ph="url:${i}:0">Добавить</button></div></label>
+  </div>`;
+}
+document.addEventListener('click', e => {
+  const t = e.target.closest('[data-ph]'); if(!t || !adminOK) return;
+  const [op, pi, k] = t.dataset.ph.split(':'), p = products[+pi], idx = +k, list = photosOf(p);
+  if(op==='left' && idx>0){ [list[idx-1], list[idx]] = [list[idx], list[idx-1]]; savePhotos(p, list); }
+  else if(op==='right' && idx<list.length-1){ [list[idx+1], list[idx]] = [list[idx], list[idx+1]]; savePhotos(p, list); }
+  else if(op==='main'){ const [x] = list.splice(idx,1); list.unshift(x); savePhotos(p, list, 'Главное фото изменено'); }
+  else if(op==='del'){ if(confirm('Удалить это фото?')){ list.splice(idx,1); savePhotos(p, list, 'Фото удалено'); } }
+  else if(op==='url'){
+    const u = $('phUrl').value.trim(); if(!/^https:\/\/[^\s"'<>]+$/i.test(u)) return toast('Вставьте ссылку, начинающуюся с https://');
+    if(list.length >= PH_MAX) return toast('Максимум '+PH_MAX+' фото');
+    list.push({url:u, label:$('phNewLabel') ? $('phNewLabel').value : 'Другое'}); savePhotos(p, list, 'Фото добавлено');
+  }
+});
+document.addEventListener('change', e => {
+  const t = e.target; if(!adminOK) return;
+  if(t.dataset.phl){ const [pi,k] = t.dataset.phl.split(':').map(Number), p = products[pi], list = photosOf(p); list[k].label = t.value; savePhotos(p, list, 'Подпись: '+t.value); }
+  else if(t.dataset.phr && t.files[0]){ const [pi,k] = t.dataset.phr.split(':').map(Number), p = products[pi];
+    fileToPhoto(t.files[0], url => { const list = photosOf(p); list[k].url = url; savePhotos(p, list, 'Фото заменено'); }); }
+  else if(t.dataset.pha && t.files.length){
+    const p = products[+t.dataset.pha], label = $('phNewLabel').value;
+    const files = [...t.files].slice(0, PH_MAX - photosOf(p).length);
+    if(files.length < t.files.length) toast('Максимум '+PH_MAX+' фото, лишние не добавлены');
+    files.forEach(f => fileToPhoto(f, url => { const list = photosOf(p); if(list.length >= PH_MAX) return; list.push({url, label}); savePhotos(p, list, 'Фото добавлено: '+label); }));
+  }
+});
+
+function openEdit(id){
+  if(!adminOK) return;
+  const i = products.findIndex(x=>x.id===id); if(i<0) return; const p = products[i];
+  editingId = id; const m = p.price - p.cost;
+  $('modal').innerHTML = `
+    <div class="dhead"><h3>✎ Редактирование товара</h3><button class="x" data-close>×</button></div>
+    <div class="mgrid">
+      <div style="display:flex;flex-direction:column;gap:10px">
+        ${photoManagerHTML(p, i)}
+      </div>
+      <div style="display:flex;flex-direction:column;gap:10px">
+        <label class="field">Бренд / производитель<input data-pf="brand" data-pi="${i}" value="${esc(p.brand)}"></label>
+        <label class="field">Название<input data-pf="name" data-pi="${i}" value="${esc(p.name)}"></label>
+        <label class="field">Категория<select data-pf="cat" data-pi="${i}">${Object.entries(CATS).map(([k,v])=>`<option value="${k}" ${p.cat===k?'selected':''}>${esc(v)}</option>`).join('')}</select></label>
+        <label class="field">Краткое описание (видно в каталоге)<textarea data-pf="specs" data-pi="${i}" rows="2">${esc(p.specs)}</textarea></label>
+        <label class="field">📁 Полные характеристики
+          <textarea data-pf="specText" data-pi="${i}" rows="12" style="font-family:Consolas,monospace;font-size:13px">${esc(p.specText||'')}</textarea>
+          <span class="note"># Группа — заголовок раздела. Каждая строка: «Название: значение». Характеристики запоминаются навсегда.</span></label>
+        <div class="row">
+          <label class="field">Цена продажи, ₸<input type="number" data-pf="price" data-pi="${i}" value="${p.price}" style="width:130px"></label>
+          <label class="field">Закупка, ₸<input type="number" data-pf="cost" data-pi="${i}" value="${p.cost}" style="width:130px"></label>
+          <label class="field">Склад<input type="number" data-pf="stock" data-pi="${i}" value="${p.stock}" style="width:80px"></label>
+        </div>
+        <div class="note">Наценка: <b class="${m>=0?'pos':'neg'}">${fmt(m)}</b> (${p.cost?Math.round(m/p.cost*100):0}%) — видите только вы</div>
+        <div class="row"><button class="btn p" data-close>Готово</button><button class="btn d" data-premove="${i}">🗑 Удалить товар</button></div>
+      </div>
+    </div>`;
+  show('modal');
+}
+
+/* Меню «⋮» в шапке */
+let afterLogin = null;
+function renderMenu(){
+  $('menu').innerHTML = `
+    <button id="mHelp">❓ Помощь и вопросы</button>
+    <button id="mContact">✉ Написать нам</button>
+    ${isAdm() ? `<button id="mShop">🛍 Открыть магазин</button>` : ''}
+    ${adminOK ? `<hr><div class="who">👤 Вы вошли как владелец</div>
+      <button id="mAdd">➕ Добавить товар</button>
+      <button id="mAdmin">⚙ Панель админа</button>
+      <button id="mPL">📊 Прибыль и убытки</button>
+      <hr><button id="mLogout">🚪 Выйти из админки</button>` : ''}`;
+}
+function afterLoginGo(){ const a = afterLogin; afterLogin = null; renderMenu(); if(a==='add'){ leaveAdmin(); openAdd(); } else renderAdmin(); }
+document.addEventListener('click', e => {
+  const t = e.target.closest('#moreBtn,#mAdd,#mAdmin,#mPL,#mShop,#mLogout,#mHelp,#mContact');
+  if(t && (t.id==='mHelp' || t.id==='mContact')){ $('menu').classList.remove('show'); openHelp(t.id==='mContact' ? 'contact' : 'faq'); return; }
+  if(t && ['mAdd','mAdmin','mPL','mLogout'].includes(t.id) && !adminOK){ $('menu').classList.remove('show'); return; }
+  if(!t){ if(!e.target.closest('#menu')) $('menu').classList.remove('show'); return; }
+  if(t.id==='moreBtn'){ renderMenu(); $('menu').classList.toggle('show'); return; }
+  $('menu').classList.remove('show');
+  if(t.id==='mAdd'){ if(adminOK){ if(isAdm()) leaveAdmin(); openAdd(); } else { afterLogin='add'; enterAdmin(); } }
+  else if(t.id==='mAdmin'){ atab = adminOK ? 'prod' : atab; enterAdmin(); }
+  else if(t.id==='mPL'){ atab='sum'; enterAdmin(); }
+  else if(t.id==='mShop') leaveAdmin();
+  else if(t.id==='mLogout'){ audit('login','Выход из панели админа'); setLogged(false); leaveAdmin(); renderMenu(); toast('Вы вышли из админки'); }
+});
+
+function enterAdmin(){ hideAll(); document.body.classList.add('adm'); $('searchBox').style.visibility='hidden'; $('cartBtn').style.display='none'; renderAdmin(); window.scrollTo(0,0); }
+function leaveAdmin(){ document.body.classList.remove('adm'); $('admin').innerHTML=''; $('searchBox').style.visibility=''; $('cartBtn').style.display=''; if(location.hash==='#admin') history.replaceState(null,'',location.pathname+location.search); renderCats(); renderGrid(); renderCart(); }
+
+function renderAdmin(){
+  const A = $('admin');
+  if(!adminOK){
+    const left = lockedFor(), t2 = tfa();
+    if(pending2fa && pending2fa.until > Date.now() && t2.on){
+      A.innerHTML = `<div class="login">
+        <h2 style="margin:0">📱 Шаг 2: проверка по телефону</h2>
+        <div class="okbox">Пароль верный ✔</div>
+        <div class="note">Номер владельца: <b>${maskPhone(t2.phone)}</b></div>
+        <label class="field">Последние 4 цифры этого номера<input id="tfaLast4" inputmode="numeric" maxlength="4" autocomplete="off"></label>
+        <label class="field">6‑значный код из приложения Authenticator на этом телефоне
+          <input id="tfaCode" inputmode="numeric" maxlength="9" autocomplete="one-time-code" placeholder="123 456" style="font-size:22px;letter-spacing:4px;text-align:center"></label>
+        ${left ? `<div class="alertbox">⏳ Слишком много ошибок. Подождите ${Math.ceil(left/60)} мин.</div>` : ''}
+        <button class="btn p" id="tfaGo" ${left?'disabled':''}>Подтвердить вход</button>
+        <div class="note">Потеряли телефон? Впишите в поле кода <b>код восстановления</b> (вида ABCD‑EFGH).</div>
+        <button class="btn" id="tfaBack">← Назад</button></div>`;
+      setTimeout(()=>$('tfaLast4') && $('tfaLast4').focus(), 30);
+      return;
+    }
+    pending2fa = null;
+    A.innerHTML = `<div class="login">
+      <h2 style="margin:0">🔒 Панель владельца</h2>
+      ${left ? `<div class="alertbox">⏳ Вход заблокирован после ${SEC.lockFails} неверных попыток. Осталось ${Math.ceil(left/60)} мин.</div>` : ''}
+      ${hasPassword() ? `<label class="field">Пароль<input type="password" id="pw" autocomplete="current-password" ${left?'disabled':''}></label>
+        <label style="display:flex;gap:8px;align-items:center;font-size:14px"><input type="checkbox" id="pwRemember"> Запомнить на ${SEC.rememberDays} дней (только на своём устройстве)</label>
+        <button class="btn p" id="pwGo" ${left?'disabled':''}>Войти</button>
+        ${tfa().on ? `<div class="note">📱 Включена защита через номер — после пароля понадобится код с телефона.</div>` : ''}`
+      : `<div class="note">Первый вход. Придумайте надёжный пароль: минимум 8 символов, буквы и цифры.</div>
+        <label class="field">Новый пароль<input type="password" id="pw1" autocomplete="new-password"></label>
+        <label class="field">Повторите пароль<input type="password" id="pw2" autocomplete="new-password"></label>
+        <button class="btn p" id="pwSet">Сохранить и войти</button>
+        <div class="note">После входа включите «защиту через номер телефона» во вкладке 🛡 Безопасность.</div>`}
+      <button class="btn" id="toShop">← Вернуться в магазин</button></div>`;
+    setTimeout(()=>{ const f = $('pw') || $('pw1'); if(f && !f.disabled) f.focus(); }, 30);
+    return;
+  }
+  const newT = tickets.filter(x=>x.status==='Новое').length;
+  const tabs = [['sum','📊 Прибыль и убытки'],['orders','🧾 Заказы'],['exp','💸 Расходы'],['prod','📦 Товары и цены'],['rev','💬 Отзывы'],['tick','🆘 Обращения'+(newT?` (${newT})`:'')],['sec',(tampered?'⚠ ':'🛡 ')+'Безопасность'],['set','⚙ Настройки']];
+  A.innerHTML = `<div class="row" style="justify-content:space-between;align-items:center"><h2 style="margin:0">Панель владельца</h2>
+    <div class="row"><button class="btn" id="toShop">Открыть магазин</button><button class="btn d" id="logout">Выйти</button></div></div>
+    <div class="atabs">${tabs.map(([k,v])=>`<button class="chip ${atab===k?'on':''}" data-atab="${k}">${v}</button>`).join('')}</div>
+    <div id="abody"></div>`;
+  if(tampered && atab!=='sec') $('abody').insertAdjacentHTML('beforebegin', `<div class="alertbox">⚠ Цены изменены в обход панели — заказы остановлены. <button class="btn" data-atab="sec">Открыть «Безопасность»</button></div>`);
+  ({sum:aSummary, orders:aOrders, exp:aExpenses, prod:aProducts, rev:aReviews, tick:aTickets, sec:aSecurity, set:aSettings})[atab]();
+}
+
+function aReviews(){
+  const all = [];
+  Object.entries(reviews).forEach(([pid, list]) => { const p = products.find(x=>x.id===pid); list.forEach(v => all.push({...v, pid, pname: p ? p.brand+' '+p.name : '(товар удалён)'})); });
+  all.sort((a,b)=> b.id.localeCompare(a.id));
+  $('abody').innerHTML = `<div class="panel"><h3>Отзывы покупателей (${all.length})</h3>
+    ${all.length ? `<table><tr><th>Дата</th><th>Товар</th><th>Имя</th><th>Оценка</th><th>Комментарий</th><th>Фото</th><th></th></tr>
+    ${all.map(v=>`<tr><td>${v.date}</td><td>${esc(v.pname)}</td><td>${esc(v.name)}</td><td>${starsHTML(v.stars)}</td>
+      <td style="white-space:normal;min-width:220px">${esc(v.text)}</td><td>${v.photo?`<img src="${v.photo}" style="height:48px;border-radius:6px">`:''}</td>
+      <td><button class="btn d" data-rdel="${v.pid}|${v.id}">Удалить</button></td></tr>`).join('')}</table>
+    <p class="note">Удаляйте спам и грубые отзывы. Покупатели видят отзывы в карточке товара.</p>` : `<div class="note">Отзывов пока нет.</div>`}</div>`;
+}
+
+function aSummary(){
+  const valid = orders.filter(o=>o.status!=='Отменён');
+  const rev = valid.reduce((s,o)=>s+o.total,0);
+  const cogs = valid.reduce((s,o)=>s+o.costTotal,0);
+  const gross = rev - cogs;
+  const exp = expenses.reduce((s,e)=>s+e.amount,0);
+  const net = gross - exp;
+  const stockVal = products.reduce((s,p)=>s+p.cost*p.stock,0);
+  // по месяцам
+  const months = {};
+  valid.forEach(o=>{ const m=o.date.slice(0,7); months[m]=months[m]||{rev:0,cogs:0,exp:0}; months[m].rev+=o.total; months[m].cogs+=o.costTotal; });
+  expenses.forEach(e=>{ const m=e.date.slice(0,7); months[m]=months[m]||{rev:0,cogs:0,exp:0}; months[m].exp+=e.amount; });
+  const mk = Object.keys(months).sort().reverse();
+  const maxAbs = Math.max(1,...mk.map(m=>Math.abs(months[m].rev-months[m].cogs-months[m].exp)));
+  // по товарам
+  const byP = {};
+  valid.forEach(o=>o.items.forEach(i=>{ byP[i.name]=byP[i.name]||{q:0,rev:0,pr:0}; byP[i.name].q+=i.qty; byP[i.name].rev+=i.price*i.qty; byP[i.name].pr+=(i.price-i.cost)*i.qty; }));
+  const top = Object.entries(byP).sort((a,b)=>b[1].pr-a[1].pr).slice(0,10);
+  const cls = v => v>=0?'pos':'neg';
+  $('abody').innerHTML = `
+    <div class="kpis">
+      <div class="kpi"><small>Выручка (продажи)</small><b>${fmt(rev)}</b></div>
+      <div class="kpi"><small>Себестоимость товаров</small><b>${fmt(cogs)}</b></div>
+      <div class="kpi"><small>Валовая прибыль</small><b class="${cls(gross)}">${fmt(gross)}</b></div>
+      <div class="kpi"><small>Расходы (аренда, реклама...)</small><b class="neg">${fmt(exp)}</b></div>
+      <div class="kpi"><small>${net>=0?'ЧИСТАЯ ПРИБЫЛЬ':'УБЫТОК'}</small><b class="${cls(net)}">${fmt(net)}</b></div>
+      <div class="kpi"><small>Товар на складе (по закупке)</small><b>${fmt(stockVal)}</b></div>
+    </div>
+    <div class="panel"><h3>По месяцам</h3>
+      ${mk.length ? `<div class="bars">${mk.map(m=>{ const r=months[m], n=r.rev-r.cogs-r.exp; return `<div class="bar"><span>${m}</span>
+        <div class="t"><i style="width:${Math.abs(n)/maxAbs*100}%;background:${n>=0?'var(--ok)':'var(--bad)'}"></i></div>
+        <b class="${cls(n)}" style="text-align:right">${fmt(n)}</b></div>`; }).join('')}</div>
+        <table style="margin-top:14px"><tr><th>Месяц</th><th class="num">Выручка</th><th class="num">Себестоимость</th><th class="num">Расходы</th><th class="num">Итог</th></tr>
+        ${mk.map(m=>{ const r=months[m], n=r.rev-r.cogs-r.exp; return `<tr><td>${m}</td><td class="num">${fmt(r.rev)}</td><td class="num">${fmt(r.cogs)}</td><td class="num">${fmt(r.exp)}</td><td class="num ${cls(n)}"><b>${fmt(n)}</b></td></tr>`; }).join('')}</table>`
+      : `<div class="note">Пока нет продаж и расходов.</div>`}
+    </div>
+    <div class="panel"><h3>Самые прибыльные товары</h3>
+      ${top.length ? `<table><tr><th>Товар</th><th class="num">Продано</th><th class="num">Выручка</th><th class="num">Прибыль</th></tr>
+      ${top.map(([n,v])=>`<tr><td>${esc(n)}</td><td class="num">${v.q}</td><td class="num">${fmt(v.rev)}</td><td class="num ${cls(v.pr)}">${fmt(v.pr)}</td></tr>`).join('')}</table>` : `<div class="note">Нет данных.</div>`}
+    </div>`;
+}
+
+function aOrders(){
+  $('abody').innerHTML = `<div class="panel"><h3>Заказы (${orders.length})</h3>
+    ${orders.length ? `<table><tr><th>№</th><th>Дата</th><th>Клиент</th><th>Телефон</th><th>Город / оплата</th><th>Товары</th><th class="num">Сумма</th><th class="num">Прибыль</th><th>Статус</th></tr>
+    ${orders.map((o,i)=>`<tr><td>${o.id}</td><td>${o.date}</td><td>${esc(o.name)}</td><td>${esc(o.phone)}</td><td>${esc(o.city)}<br><small>${esc(o.pay)}</small></td>
+      <td style="white-space:normal;min-width:200px">${o.items.map(it=>esc(it.name)+' × '+it.qty).join('<br>')}</td>
+      <td class="num">${fmt(o.total)}</td><td class="num ${o.total-o.costTotal>=0?'pos':'neg'}">${fmt(o.total-o.costTotal)}</td>
+      <td><select data-ostatus="${i}">${['Новый','Оплачен','Доставлен','Отменён'].map(s=>`<option ${o.status===s?'selected':''}>${s}</option>`).join('')}</select></td></tr>`).join('')}</table>
+    <p class="note">Заказы со статусом «Отменён» не учитываются в прибыли, товар возвращается на склад.</p>`
+    : `<div class="note">Заказов пока нет.</div>`}</div>`;
+}
+
+function aExpenses(){
+  const total = expenses.reduce((s,e)=>s+e.amount,0);
+  $('abody').innerHTML = `<div class="panel"><h3>Добавить расход / убыток</h3>
+    <div class="row">
+      <label class="field">Дата<input type="date" id="eDate" value="${today()}"></label>
+      <label class="field">Статья<select id="eCat"><option>Аренда</option><option>Зарплата</option><option>Реклама</option><option>Доставка</option><option>Налоги</option><option>Коммунальные</option><option>Брак / возврат</option><option>Прочее</option></select></label>
+      <label class="field">Комментарий<input id="eNote" placeholder="например: аренда ТРЦ за ноябрь"></label>
+      <label class="field">Сумма, ₸<input type="number" id="eAmt" min="0" step="100"></label>
+      <button class="btn p" id="eAdd">Добавить</button>
+    </div></div>
+    <div class="panel"><h3>Все расходы — ${fmt(total)}</h3>
+    ${expenses.length ? `<table><tr><th>Дата</th><th>Статья</th><th>Комментарий</th><th class="num">Сумма</th><th></th></tr>
+      ${expenses.map((e,i)=>`<tr><td>${e.date}</td><td>${esc(e.cat)}</td><td>${esc(e.note)}</td><td class="num neg">${fmt(e.amount)}</td><td><button class="btn d" data-edel="${i}">Удалить</button></td></tr>`).join('')}</table>`
+      : `<div class="note">Расходов нет.</div>`}</div>`;
+}
+
+function aProducts(){
+  $('abody').innerHTML = `<div class="panel"><h3>🗂 Категории</h3>
+    <div class="row" style="margin-bottom:10px">${Object.entries(CATS).map(([k,v])=>`<span class="chip">${esc(v)} (${products.filter(p=>p.cat===k).length}) <button class="x" data-catdel="${k}" style="font-size:16px;color:var(--bad)" title="Удалить">×</button></span>`).join('')}</div>
+    <div class="row"><label class="field">Новая категория<input id="catName" placeholder="Например: Телевизоры, Одежда, Игрушки"></label><button class="btn p" id="catAdd">Добавить категорию</button></div></div>
+    <div class="panel"><h3>➕ Добавить любой товар</h3>${addFormHTML()}</div>
+    <div class="panel"><h3>Товары, цены и склад (${products.length})</h3>
+    <p class="note">«Цена» — видят покупатели. «Закупка» — ваша себестоимость, видите только вы. Наценка считается автоматически.
+    <b>Фото:</b> нажмите «📷 Загрузить» и выберите любую картинку с компьютера или телефона, либо вставьте ссылку на фото из интернета.
+    Менять фото можно только здесь — покупатели этого сделать не могут.</p>
+    <table><tr><th>Фото</th><th>Товар</th><th class="num">Цена, ₸</th><th class="num">Закупка, ₸</th><th class="num">Наценка</th><th class="num">Склад</th><th>Изменить фото</th></tr>
+    ${products.map((p,i)=>{ const m=p.price-p.cost; return `<tr><td><div class="mini" style="width:64px;height:64px;display:flex;align-items:center;justify-content:center;background:#f1f5f9;border-radius:10px;padding:4px">${picHTML(p)}</div></td>
+      <td><div style="display:flex;flex-direction:column;gap:4px">
+        <div class="row" style="flex-wrap:nowrap;gap:4px"><input data-pf="brand" data-pi="${i}" value="${esc(p.brand)}" style="width:90px" title="Бренд">
+          <select data-pf="cat" data-pi="${i}" style="padding:6px;border:1px solid var(--line);border-radius:8px">${Object.entries(CATS).map(([k,v])=>`<option value="${k}" ${p.cat===k?'selected':''}>${v}</option>`).join('')}</select></div>
+        <input class="wide" data-pf="name" data-pi="${i}" value="${esc(p.name)}" title="Название">
+        <input class="wide" data-pf="specs" data-pi="${i}" value="${esc(p.specs)}" title="Характеристики" placeholder="Характеристики">
+        <button class="btn d" data-premove="${i}" style="align-self:flex-start;padding:4px 10px">🗑 Удалить товар</button>
+      </div></td>
+      <td class="num"><input type="number" data-pf="price" data-pi="${i}" value="${p.price}"></td>
+      <td class="num"><input type="number" data-pf="cost" data-pi="${i}" value="${p.cost}"></td>
+      <td class="num ${m>=0?'pos':'neg'}">${fmt(m)}<br><small>${p.cost?Math.round(m/p.cost*100):0}%</small></td>
+      <td class="num"><input type="number" data-pf="stock" data-pi="${i}" value="${p.stock}" style="width:70px"></td>
+      <td><div class="row" style="flex-wrap:nowrap;align-items:center">
+        <button class="btn p" data-qedit="${p.id}" style="white-space:nowrap">🖼 Все фото (${photosOf(p).length})</button>
+        <label class="btn" style="white-space:nowrap" title="Заменить главное фото">📷 Главное<input type="file" accept="image/*" data-pupload="${i}" hidden></label>
+        <input class="wide" data-pf="img" data-pi="${i}" value="${p.img.startsWith('data:')?'':esc(p.img)}" placeholder="${p.img.startsWith('data:')?'(загружено своё фото)':'или ссылка https://...'}">
+        ${p.img?`<button class="btn d" data-pdel="${i}" title="Вернуть рисунок">✕</button>`:''}
+      </div></td></tr>`; }).join('')}</table></div>`;
+}
+
+function aSettings(){
+  $('abody').innerHTML = `<div class="panel"><h3>💳 Рассрочка</h3><div class="row">
+      <label class="field">Наценка за 1 месяц, %<input type="number" id="instRate" value="${settings.rate}" min="0" step="0.5" style="width:120px"></label>
+      <label class="field">Сроки, мес (через запятую)<input id="instTerms" value="${settings.terms.join(', ')}" style="width:180px"></label>
+      <button class="btn p" id="instSave">Сохранить</button></div>
+      <p class="note">Сейчас: телефон за 500 000 ₸ на ${maxTerm()} мес → ${fmt(instCalc(500000,maxTerm()).month)} в месяц, итого ${fmt(instCalc(500000,maxTerm()).total)}. Наценка от рассрочки входит в вашу прибыль.</p></div>
+    <div class="panel"><h3>📞 Контакты магазина (видны в «Помощи»)</h3><div class="row">
+      <label class="field">Телефон<input id="shPhone" value="${esc(shopInfo.phone)}" placeholder="+7 7XX XXX XX XX"></label>
+      <label class="field">WhatsApp<input id="shWa" value="${esc(shopInfo.wa)}" placeholder="+7 7XX XXX XX XX"></label>
+      <label class="field">Режим работы<input id="shHours" value="${esc(shopInfo.hours)}"></label>
+      <label class="field">Адрес / город<input id="shAddr" value="${esc(shopInfo.addr)}"></label>
+      <button class="btn p" id="shopSave">Сохранить</button></div></div>
+    <div class="panel"><h3>🔑 Сменить пароль</h3><div class="row">
+      <label class="field">Текущий пароль<input type="password" id="npOld" autocomplete="current-password"></label>
+      <label class="field">Новый пароль<input type="password" id="np" autocomplete="new-password"></label>
+      <button class="btn p" id="npSave">Сохранить</button></div>
+      <p class="note">Минимум 8 символов, буквы и цифры. После смены пароля другие сессии станут недействительными.</p></div>
+    <div class="panel"><h3>Резервная копия</h3><div class="row">
+      <button class="btn" id="exp">Скачать данные (JSON)</button>
+      <label class="btn">Загрузить из файла<input type="file" id="imp" accept=".json" hidden></label></div>
+      <p class="note">Данные хранятся в этом браузере. Делайте резервную копию, чтобы не потерять заказы.</p></div>
+    <div class="panel"><h3>Сброс</h3><div class="row">
+      <button class="btn d" id="resetOrders">Удалить все заказы и расходы</button>
+      <button class="btn d" id="resetProducts">Вернуть каталог по умолчанию</button></div></div>`;
+}
+
+document.addEventListener('click', async e => {
+  const t = e.target.closest('#pwGo,#pwSet,#toShop,#logout,[data-atab],#eAdd,[data-edel],#npSave,#exp,#resetOrders,#resetProducts,[data-pdel],[data-premove],#nAdd,#adminBtn,#addBtn,#instSave,[data-gdel],[data-qedit],#catAdd,[data-catdel],#tfaGo,#tfaBack,#shopSave,#integOk,#idleSave,#unlockNow,#auditExp,#tfaStart,#tfaConfirm,#tfaCancel,#tfaOff,#tfaNewCodes,#tfaCodesDone,[data-tdel]');
+  if(!t) return;
+  /* всё, кроме входа, доступно только вошедшему админу */
+  if(!adminOK && !['pwGo','pwSet','toShop','tfaGo','tfaBack'].includes(t.id)){ audit('warn','Попытка действия админа без входа: '+(t.id||Object.keys(t.dataset)[0])); return toast('Нужно войти как владелец'); }
+  if(await securityClick(t)) return;
+  if(t.id==='adminBtn'){ enterAdmin(); return; }
+  if(t.id==='addBtn'){ openAdd(); return; }
+  if(t.id==='instSave'){
+    if(!adminOK) return;
+    const rate = +$('instRate').value, terms = [...new Set($('instTerms').value.split(/[,\s]+/).map(Number).filter(n=>n>=1&&n<=60))].sort((a,b)=>a-b);
+    if(!(rate>=0) || !terms.length) return toast('Проверьте процент и сроки');
+    settings = {rate, terms}; saveAll(); audit('change', `Рассрочка: ${rate}% в месяц, сроки ${terms.join(', ')} мес`); renderAdmin(); toast('Рассрочка сохранена'); return;
+  }
+  if(t.dataset.gdel){
+    if(!adminOK) return; const [i,k] = t.dataset.gdel.split(':').map(Number);
+    products[i].gallery.splice(k,1); saveAll(); refresh(); toast('Фото удалено из галереи'); return;
+  }
+  if(t.dataset.qedit){ openEdit(t.dataset.qedit); return; }
+  if(t.id==='catAdd'){
+    if(!adminOK) return; const v=$('catName').value.trim(); if(!v) return toast('Введите название категории');
+    if(Object.values(CATS).some(c=>c.toLowerCase()===v.toLowerCase())) return toast('Такая категория уже есть');
+    CATS['c'+Date.now()] = v; saveAll(); refresh(); toast('Категория добавлена: '+v); return;
+  }
+  if(t.dataset.catdel){
+    if(!adminOK) return; const k=t.dataset.catdel, n=products.filter(p=>p.cat===k).length;
+    if(n) return toast('Сначала перенесите или удалите товары этой категории ('+n+' шт.)');
+    if(confirm('Удалить категорию «'+CATS[k]+'»?')){ delete CATS[k]; if(state.cat===k) state.cat='all'; saveAll(); refresh(); } return;
+  }
+  if(t.id==='nAdd'){
+    if(!adminOK) return;
+    const name=$('nName').value.trim(), brand=$('nBrand').value.trim(), price=+$('nPrice').value, cost=+$('nCost').value;
+    if(!name){ $('nName').focus(); $('nName').style.borderColor='var(--bad)'; return toast('Впишите название товара'); }
+    if(!(price>0)){ $('nPrice').focus(); $('nPrice').style.borderColor='var(--bad)'; return toast('Впишите цену в тенге'); }
+    const cat=$('nCat').value, shape={phones:'phone',tablets:'tablet',laptops:'laptop',pcs:'desktop',gadgets:'watch'}[cat] || 'box';
+    products.unshift({id:'p'+Date.now(), brand, name, cat, shape, color:'#64748b', s1:'#60a5fa', s2:'#1e3a8a', price, cost:cost||0,
+      stock:Math.max(0,+$('nStock').value||0), specs:$('nSpecs').value.trim(), img:newPhoto, pop:0, specText:''});
+    { const np = products[0], typed = $('nSpecText') ? $('nSpecText').value.trim() : '';
+      np.specText = typed || specLib[specKey(np)] || '';
+      if(!typed && np.specText) toast('Характеристики восстановлены из памяти'); else rememberSpecs(np); }
+    newPhoto = '';
+    if(!LS.set('products', products)){ products[0].img=''; saveAll(); toast('Фото не поместилось в память, товар добавлен без фото'); }
+    else saveAll();
+    if(!isAdm()){ hideAll(); state.cat='all'; window.scrollTo(0,0); }
+    audit('change', `Добавлен товар «${brand} ${name}» за ${fmt(price)}`);
+    refresh(); toast('Товар добавлен: '+name); return;
+  }
+  if(t.dataset.premove){
+    if(!adminOK) return; const p=products[+t.dataset.premove];
+    if(confirm('Удалить товар «'+p.brand+' '+p.name+'» из магазина? Характеристики останутся в памяти.')){ rememberSpecs(p); audit('change', `Удалён товар «${p.brand} ${p.name}»`); products.splice(+t.dataset.premove,1); delete cart[p.id]; saveAll(); if(!isAdm()) hideAll(); refresh(); toast('Товар удалён'); }
+    return;
+  }
+  if(t.dataset.pdel){ if(!adminOK) return; products[+t.dataset.pdel].img=''; saveAll(); refresh(); toast('Фото удалено, показан рисунок'); return; }
+  if(t.id==='pwGo'){
+    if(lockedFor()){ renderAdmin(); return toast('Вход временно заблокирован'); }
+    t.disabled = true; t.textContent = 'Проверка…';
+    const ok = await checkPassword($('pw').value), rem = $('pwRemember') && $('pwRemember').checked;
+    if(!ok){
+      const l = registerFail(); audit('warn', 'Неверный пароль при входе');
+      renderAdmin(); return toast(lockedFor() ? `Слишком много попыток. Вход заблокирован на ${Math.ceil(lockedFor()/60)} мин` : `Неверный пароль. Осталось попыток: ${SEC.lockFails - l.fails}`);
+    }
+    if(tfa().on){ pending2fa = {until: Date.now() + SEC.pending2faSec*1000, remember: rem}; audit('login','Пароль верный, ожидается код с телефона'); renderAdmin(); return; }
+    clearFails(); await setLogged(true, rem); audit('login', 'Вход в панель админа'+(rem?' (запомнить устройство)':'')); afterLoginGo();
+  } else if(t.id==='tfaGo'){
+    const t2 = tfa();
+    if(!pending2fa || pending2fa.until < Date.now()){ pending2fa = null; renderAdmin(); return toast('Время вышло — введите пароль снова'); }
+    if(lockedFor()){ renderAdmin(); return toast('Вход временно заблокирован'); }
+    const last4 = $('tfaLast4').value.replace(/\D/g,''), code = $('tfaCode').value.trim();
+    let ok = last4 === t2.phone.slice(-4), how = 'код с телефона';
+    if(ok){
+      if(/^\d{3}\s?\d{3}$/.test(code)) ok = await checkTotp(t2.secret, code);
+      else if(/^[A-Z2-7]{4}-?[A-Z2-7]{4}$/i.test(code)){ const h = await recHash(code), i = (t2.rec||[]).indexOf(h); ok = i >= 0; if(ok){ t2.rec.splice(i,1); LS.set('tfa', t2); how = `код восстановления (осталось ${t2.rec.length})`; } }
+      else ok = false;
+    }
+    if(!ok){ registerFail(); audit('warn','Неверный код или номер на 2‑м шаге входа'); renderAdmin(); return toast(lockedFor() ? 'Вход заблокирован' : 'Неверные цифры номера или код'); }
+    const rem = pending2fa.remember; pending2fa = null; clearFails();
+    await setLogged(true, rem); audit('login', 'Вход в панель админа: пароль + '+how); afterLoginGo();
+  } else if(t.id==='tfaBack'){ pending2fa = null; renderAdmin(); }
+  else if(t.id==='pwSet'){
+    if(hasPassword()) return renderAdmin();
+    const a=$('pw1').value, b=$('pw2').value, pr = pwProblems(a);
+    if(pr.length) return toast('Ненадёжный пароль: '+pr.join(', '));
+    if(a!==b) return toast('Пароли не совпадают');
+    await setPassword(a); await setLogged(true, false); await signData(); audit('security','Создан пароль администратора'); afterLoginGo(); toast('Пароль сохранён');
+  } else if(t.id==='toShop'){ afterLogin=null; pending2fa=null; leaveAdmin(); }
+  else if(t.id==='logout'){ audit('login','Выход из панели админа'); setLogged(false); leaveAdmin(); renderMenu(); toast('Вы вышли из админки'); }
+  else if(t.dataset.atab){ atab=t.dataset.atab; renderAdmin(); }
+  else if(t.id==='eAdd'){
+    const amount = +$('eAmt').value; if(!(amount>0)) return toast('Введите сумму');
+    expenses.unshift({date:$('eDate').value||today(), cat:$('eCat').value, note:$('eNote').value.trim(), amount}); saveAll(); renderAdmin(); toast('Расход добавлен');
+  } else if(t.dataset.edel){ if(confirm('Удалить этот расход?')){ expenses.splice(+t.dataset.edel,1); saveAll(); renderAdmin(); } }
+  else if(t.id==='npSave'){
+    if(lockedFor()) return toast('Подождите — слишком много ошибок');
+    if(!(await checkPassword($('npOld').value))){ registerFail(); audit('warn','Неверный текущий пароль при смене пароля'); return toast('Текущий пароль неверный'); }
+    const v = $('np').value, pr = pwProblems(v); if(pr.length) return toast('Ненадёжный пароль: '+pr.join(', '));
+    await setPassword(v); await createSession(false); audit('security','Пароль администратора изменён'); toast('Пароль изменён'); $('np').value=''; $('npOld').value='';
+  }
+  else if(t.id==='exp'){
+    if(!(await askPassword('Скачать резервную копию со всеми заказами и телефонами клиентов'))) return;
+    audit('security','Скачана резервная копия данных');
+    const blob = new Blob([JSON.stringify({products,orders,expenses},null,2)],{type:'application/json'});
+    const a = document.createElement('a'); a.href=URL.createObjectURL(blob); a.download='ibrat-market-backup-'+today()+'.json'; a.click();
+  } else if(t.id==='resetOrders'){ if(confirm('Удалить ВСЕ заказы и расходы? Это нельзя отменить.') && await askPassword('Удалить все заказы и расходы')){ audit('alert',`Удалены все заказы (${orders.length}) и расходы (${expenses.length})`); orders=[]; expenses=[]; saveAll(); renderAdmin(); } }
+  else if(t.id==='resetProducts'){ if(confirm('Вернуть каталог, цены и склад по умолчанию?') && await askPassword('Сбросить каталог и цены')){ audit('alert','Каталог и цены сброшены по умолчанию'); products=JSON.parse(JSON.stringify(DEFAULT)); products.forEach(p=>p.specText=specLib['id:'+p.id]||SPECS[p.id]||''); CATS={...BASE_CATS}; state.cat='all'; cart={}; saveAll(); renderCats(); renderAdmin(); } }
+});
+document.addEventListener('change', e => {
+  const t = e.target;
+  if(!adminOK) return;   // все поля ниже — только для админа
+  if(t.id==='auditF'){ $('auditTable').innerHTML = auditTableHTML(t.value); return; }
+  if(t.dataset.tstatus){ const k = tickets[+t.dataset.tstatus]; k.status = t.value; LS.set('tickets', tickets); audit('help', `Обращение ${k.id}: ${t.value}`); toast('Статус: '+t.value); return; }
+  if(t.dataset.pf){
+    const p = products[+t.dataset.pi], f = t.dataset.pf, oldV = p[f];
+    if(f==='name' && !t.value.trim()) return toast('Название не может быть пустым');
+    if(f==='img' && t.value.trim() && !/^https:\/\/[^\s"'<>]+$/i.test(t.value.trim())){ t.value = ''; return toast('Ссылка на фото должна начинаться с https://'); }
+    if(f==='price' || f==='cost'){
+      const v = Math.max(0, +t.value||0);
+      if(f==='price' && !(v>0)){ t.value = oldV; return toast('Цена должна быть больше 0'); }
+      if(f==='price' && v < p.cost && !confirm(`Цена ${fmt(v)} ниже закупки ${fmt(p.cost)} — продажа в убыток. Сохранить?`)){ t.value = oldV; return; }
+      if(f==='price' && oldV && Math.abs(v-oldV)/oldV > 0.5 && !confirm(`Цена меняется больше чем на 50%: ${fmt(oldV)} → ${fmt(v)}. Это не ошибка?`)){ t.value = oldV; return; }
+    }
+    p[f] = ['img','name','brand','specs','cat','specText'].includes(f) ? t.value.trim() : Math.max(0, +t.value||0);
+    if(['price','cost','name','stock'].includes(f) && oldV !== p[f]) audit('change', `${{price:'Цена',cost:'Закупка',name:'Название',stock:'Склад'}[f]} «${p.brand} ${f==='name'?oldV:p.name}»: ${f==='price'||f==='cost' ? fmt(oldV)+' → '+fmt(p[f]) : oldV+' → '+p[f]}`);
+    if(f==='specText' || f==='name' || f==='brand') rememberSpecs(p);
+    if(f==='brand' || f==='cat') renderCats();
+    saveAll();
+    if(isAdm()){ if(f!=='stock') aProducts(); } else { renderGrid(); if(f==='img'||f==='cat') openEdit(p.id); }
+    toast('Сохранено');
+  } else if(t.dataset.qprice){
+    if(!adminOK) return;
+    const p = products.find(x=>x.id===t.dataset.qprice), v = +t.value;
+    if(!(v>0)) { t.value = p.price; return toast('Неверная цена'); }
+    if(v < p.cost && !confirm(`Цена ${fmt(v)} ниже закупки ${fmt(p.cost)} — продажа в убыток. Сохранить?`)){ t.value = p.price; return; }
+    if(Math.abs(v-p.price)/p.price > 0.5 && !confirm(`Цена меняется больше чем на 50%: ${fmt(p.price)} → ${fmt(v)}. Это не ошибка?`)){ t.value = p.price; return; }
+    audit('change', `Цена «${p.brand} ${p.name}»: ${fmt(p.price)} → ${fmt(v)}`);
+    p.price = v; saveAll(); renderGrid(); toast('Новая цена: '+fmt(v));
+  } else if(t.dataset.gupload && t.files.length){
+    if(!adminOK) return;
+    const p = products[+t.dataset.gupload]; p.gallery = p.gallery || [];
+    [...t.files].slice(0, 6 - p.gallery.length).forEach(f => fileToPhoto(f, url => {
+      p.gallery.push(url);
+      if(!LS.set('products', products)){ p.gallery.pop(); return toast('Память браузера заполнена'); }
+      refresh(); toast('Фото добавлено в галерею');
+    }));
+  } else if(t.id==='nPhoto' && t.files[0]){
+    fileToPhoto(t.files[0], url => { newPhoto = url; $('nPhotoInfo').innerHTML = `<img src="${url}" style="height:40px;vertical-align:middle;border-radius:6px"> фото выбрано`; });
+  } else if(t.dataset.pupload && t.files[0]){
+    if(!adminOK) return;
+    const p = products[+t.dataset.pupload];
+    fileToPhoto(t.files[0], url => {
+      const old = p.img; p.img = url;
+      if(!LS.set('products', products)){ p.img = old; toast('Память браузера заполнена — удалите часть фото или используйте ссылки'); return; }
+      refresh(); toast('Фото обновлено: '+p.name);
+    });
+  } else if(t.dataset.ostatus){
+    const o = orders[+t.dataset.ostatus], old = o.status, nw = t.value;
+    if(old!=='Отменён' && nw==='Отменён') o.items.forEach(i=>{ const p=products.find(x=>x.id===i.id); if(p) p.stock+=i.qty; });
+    if(old==='Отменён' && nw!=='Отменён') o.items.forEach(i=>{ const p=products.find(x=>x.id===i.id); if(p) p.stock=Math.max(0,p.stock-i.qty); });
+    o.status = nw; saveAll(); audit('order', `Заказ ${o.id}: ${old} → ${nw}`); toast('Статус: '+nw);
+  } else if(t.id==='imp' && t.files[0]){
+    const file = t.files[0]; t.value = '';
+    if(file.size > 15e6) return toast('Файл слишком большой');
+    askPassword('Загрузить данные из файла — текущие товары и заказы будут заменены').then(ok => {
+      if(!ok) return;
+      const r = new FileReader(); r.onload = () => {
+        try{
+          const d = JSON.parse(r.result);
+          const okP = Array.isArray(d.products) && d.products.every(p => p && typeof p.id==='string' && typeof p.name==='string' && Number.isFinite(p.price) && p.price>=0 && Number.isFinite(p.cost) && Number.isFinite(p.stock));
+          const okO = !d.orders || (Array.isArray(d.orders) && d.orders.every(o => o && typeof o.id==='string' && Array.isArray(o.items) && Number.isFinite(o.total)));
+          const okE = !d.expenses || (Array.isArray(d.expenses) && d.expenses.every(x => x && Number.isFinite(x.amount)));
+          if(!okP || !okO || !okE){ audit('alert','Отклонён повреждённый или подделанный файл резервной копии'); return toast('Файл повреждён или не подходит'); }
+          products = d.products; if(d.orders) orders = d.orders; if(d.expenses) expenses = d.expenses;
+          saveAll(); audit('security', `Загружены данные из файла: ${products.length} товаров, ${orders.length} заказов`); renderCats(); renderAdmin(); toast('Данные загружены');
+        }catch(err){ audit('warn','Ошибка чтения файла резервной копии'); toast('Ошибка файла'); }
+      }; r.readAsText(file);
+    });
+  }
+});
+document.addEventListener('keydown', e => { if(e.key==='Enter' && e.target.id==='pw') $('pwGo').click(); });
+
+/* =====================================================================
+   ВКЛАДКА «БЕЗОПАСНОСТЬ»
+   ===================================================================== */
+function auditTableHTML(f){
+  const rows = auditLog.filter(a => !f || a.type===f).slice(0, 200);
+  return rows.length ? `<table><tr><th>Время</th><th>Тип</th><th>Событие</th></tr>${rows.map(a=>`<tr class="au-${esc(a.type)}"><td>${new Date(a.t).toLocaleString('ru-RU')}</td><td>${AUDIT_T[a.type]||esc(a.type)}</td><td style="white-space:normal;min-width:260px">${esc(a.msg)}</td></tr>`).join('')}</table>` : '<div class="note">Событий нет.</div>';
+}
+function tfaPanelHTML(){
+  const t2 = tfa();
+  if(tfaShowCodes) return `<div class="okbox">✔ Защита через номер включена!</div>
+    <p><b>Коды восстановления</b> — сохраните их (сфотографируйте или запишите на бумаге). Каждый код работает один раз, если телефон потерян. Больше они не покажутся.</p>
+    <div class="codes">${tfaShowCodes.map(c=>`<span>${c}</span>`).join('')}</div>
+    <div class="row" style="margin-top:12px"><button class="btn p" id="tfaCodesDone">Я сохранил коды</button></div>`;
+  if(tfaSetup) return `<ol class="steps">
+      <li>На телефоне <b>${fmtPhone(tfaSetup.phone)}</b> установите приложение <b>Google Authenticator</b> или <b>Microsoft Authenticator</b> (бесплатно в App Store / Google Play).</li>
+      <li>В приложении нажмите <b>«+» → «Ввести ключ настройки»</b>. Название: <b>IBRAT MARKET</b>. Ключ:
+        <div class="keybox" style="margin-top:6px">${tfaSetup.secret.match(/.{1,4}/g).join(' ')}</div>
+        <div class="note">Если открываете эту страницу на телефоне — <a href="otpauth://totp/IBRAT%20MARKET:${encodeURIComponent(tfaSetup.phone)}?secret=${tfaSetup.secret}&issuer=IBRAT%20MARKET&digits=6&period=30">нажмите здесь</a>, ключ добавится сам.</div></li>
+      <li>Приложение покажет 6 цифр, они меняются каждые 30 секунд. Введите их сюда:
+        <div class="row" style="margin-top:6px"><input id="tfaConfirmCode" inputmode="numeric" maxlength="7" placeholder="123456" style="font-size:20px;letter-spacing:3px;width:160px;padding:8px;border:1px solid var(--line);border-radius:10px">
+        <button class="btn p" id="tfaConfirm">Подтвердить и включить</button><button class="btn" id="tfaCancel">Отмена</button></div></li>
+    </ol>`;
+  if(t2.on) return `<div class="okbox">✔ Включена. Номер владельца: <b>${maskPhone(t2.phone)}</b> · с ${esc(t2.since||'')} · кодов восстановления осталось: <b>${(t2.rec||[]).length}</b></div>
+    <p class="note">При входе нужно: пароль → последние 4 цифры номера → 6‑значный код из приложения на этом телефоне.</p>
+    <div class="row"><button class="btn" id="tfaNewCodes">Новые коды восстановления</button><button class="btn d" id="tfaOff">Отключить защиту через номер</button></div>`;
+  return `<p>Даже если кто‑то узнает пароль, без вашего телефона он не войдёт. При входе понадобятся <b>последние 4 цифры номера</b> и <b>код из приложения</b> на телефоне.</p>
+    <div class="row"><label class="field">Номер телефона владельца<input id="tfaPhone" placeholder="+7 7XX XXX XX XX" inputmode="tel"></label>
+    <button class="btn p" id="tfaStart">📱 Включить защиту через номер</button></div>`;
+}
+function aSecurity(){
+  const rec = LS.get('pass2', null), s = LS.get('sess', null), left = lockedFor(), t2 = tfa();
+  const fails24 = auditLog.filter(a => a.type==='warn' && /Неверн/.test(a.msg) && Date.now() - Date.parse(a.t) < 864e5).length;
+  const alerts = auditLog.filter(a => a.type==='alert').length;
+  $('abody').innerHTML = `
+    <div class="kpis">
+      <div class="kpi"><small>Пароль</small><b class="${rec?'pos':'neg'}">${rec?'✔ Зашифрован':'⚠ Старый формат'}</b><div class="note">${rec?`PBKDF2‑SHA256, ${rec.iter.toLocaleString('ru-RU')} итераций, соль`:'Выйдите и войдите снова'}</div></div>
+      <div class="kpi"><small>Защита через номер</small><b class="${t2.on?'pos':'neg'}">${t2.on?'✔ Включена':'✖ Выключена'}</b><div class="note">${t2.on?maskPhone(t2.phone):'Рекомендуем включить'}</div></div>
+      <div class="kpi"><small>Неудачные попытки за 24 ч</small><b class="${fails24?'neg':'pos'}">${fails24}</b><div class="note">${left?`Блокировка ещё ${Math.ceil(left/60)} мин`:`Блокировка после ${SEC.lockFails} ошибок`}</div></div>
+      <div class="kpi"><small>Подпись цен</small><b class="${tampered?'neg':'pos'}">${tampered?'⚠ Нарушена':'✔ В порядке'}</b><div class="note">${alerts} тревог в журнале</div></div>
+      <div class="kpi"><small>Сессия</small><b style="font-size:16px">${s?'до '+new Date(s.exp).toLocaleString('ru-RU',{day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'}):'—'}</b><div class="note">автовыход через ${SEC.idleMin} мин бездействия</div></div>
+    </div>
+    ${tampered ? `<div class="alertbox">⚠ Цены, закупка или настройки изменены в обход панели админа (например, через инструменты разработчика). Оформление заказов остановлено. Проверьте цены во вкладке «Товары и цены», затем подтвердите. <button class="btn p" id="integOk">✔ Я проверил — подтвердить</button></div>` : ''}
+    <div class="panel"><h3>📱 Защита через номер телефона (2 шага)</h3>${tfaPanelHTML()}</div>
+    <div class="panel"><h3>⚙ Параметры защиты</h3><div class="row">
+      <label class="field">Автовыход при бездействии<select id="idleMin">${[10,15,30,60].map(m=>`<option value="${m}" ${SEC.idleMin===m?'selected':''}>${m} мин</option>`).join('')}</select></label>
+      <button class="btn p" id="idleSave">Сохранить</button>
+      ${left ? `<button class="btn" id="unlockNow">Снять блокировку входа</button>` : ''}</div>
+      <ul class="note seclist">
+        <li>🔑 Пароль хранится только как хеш PBKDF2 с солью — сам пароль нигде не записан.</li>
+        <li>⏳ После ${SEC.lockFails} неверных попыток вход блокируется на 1, 2, 4, 8 … до 60 минут.</li>
+        <li>📱 Второй шаг: последние цифры номера + одноразовый код из приложения на телефоне (меняется каждые 30 сек).</li>
+        <li>🔐 Опасные действия (резервная копия, загрузка данных, сброс) требуют ещё раз ввести пароль.</li>
+        <li>🧾 Цены подписываются: если изменить их в обход админки, заказы остановятся и появится тревога.</li>
+        <li>🛒 Заказы: проверка имени и номера РК, до ${LIMITS.perItem} шт. одного товара, до ${LIMITS.maxOrders} заказов за ${LIMITS.ordersWindowMin} мин, ловушка для ботов, защита от двойных заказов.</li>
+        <li>💬 Отзывы: один на товар, без ссылок, телефонов, мата и капса, пауза 1 минута; отметка «✔ Покупатель».</li>
+        <li>🛡 Политика безопасности страницы (CSP) запрещает чужие скрипты и отправку данных на сторонние сайты.</li>
+      </ul></div>
+    <div class="panel"><h3>📜 Журнал событий (${auditLog.length})</h3>
+      <div class="row" style="margin-bottom:10px"><select id="auditF" style="padding:8px;border:1px solid var(--line);border-radius:8px"><option value="">Все события</option>${Object.entries(AUDIT_T).map(([k,v])=>`<option value="${k}">${v}</option>`).join('')}</select>
+      <button class="btn" id="auditExp">Скачать журнал</button></div>
+      <div id="auditTable">${auditTableHTML('')}</div></div>
+    <div class="panel"><h3>ℹ Честно о границах защиты</h3><p class="note">Сейчас магазин работает в браузере без сервера. Эти меры хорошо защищают от посторонних, подбора пароля, спама, ботов и подмены цен. Но человек, который сидит за <b>этим</b> компьютером и умеет программировать, теоретически может обойти защиту в браузере. Настоящие SMS‑коды и полная защита возможны только с сервером — тогда пароль, заказы и номер телефона хранятся на сервере, а не в браузере.</p></div>`;
+}
+async function securityClick(t){
+  const id = t.id;
+  if(id==='integOk'){ if(!(await askPassword('Подтвердить текущие цены как правильные'))) return true; await signData(); audit('security','Админ проверил и подтвердил текущие цены'); renderAdmin(); toast('Подпись цен обновлена'); return true; }
+  if(id==='idleSave'){ SEC.idleMin = +$('idleMin').value; LS.set('secCfg', {idleMin: SEC.idleMin}); touchSession(); audit('security', `Автовыход: ${SEC.idleMin} мин`); toast('Сохранено'); renderAdmin(); return true; }
+  if(id==='unlockNow'){ clearFails(); audit('security','Блокировка входа снята админом'); renderAdmin(); return true; }
+  if(id==='auditExp'){ const blob = new Blob([auditLog.map(a=>`${a.t}\t${AUDIT_T[a.type]||a.type}\t${a.msg}`).join('\n')], {type:'text/plain'}); const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = 'ibrat-security-log-'+today()+'.txt'; a.click(); return true; }
+  if(id==='shopSave'){ shopInfo = {phone:$('shPhone').value.trim().slice(0,30), wa:$('shWa').value.trim().slice(0,30), hours:$('shHours').value.trim().slice(0,60), addr:$('shAddr').value.trim().slice(0,80)}; LS.set('shopInfo', shopInfo); audit('change','Изменены контакты магазина'); toast('Контакты сохранены'); return true; }
+  if(id==='tfaStart'){
+    const ph = normPhone($('tfaPhone').value); if(!ph) return toast('Номер в формате +7 7XX XXX XX XX'), true;
+    if(!hasSubtle) return toast('Браузер не поддерживает шифрование — обновите браузер'), true;
+    tfaSetup = {phone: ph, secret: b32enc(rndBytes(20))}; renderAdmin(); return true;
+  }
+  if(id==='tfaCancel'){ tfaSetup = null; renderAdmin(); return true; }
+  if(id==='tfaConfirm'){
+    const code = $('tfaConfirmCode').value;
+    if(!(await checkTotp(tfaSetup.secret, code))) return toast('Код не подходит. Проверьте время на телефоне и ключ'), true;
+    const codes = newRecoveryCodes();
+    LS.set('tfa', {on:true, phone:tfaSetup.phone, secret:tfaSetup.secret, rec: await Promise.all(codes.map(recHash)), since: today()});
+    audit('security', `Включена защита через номер ${maskPhone(tfaSetup.phone)}`);
+    tfaSetup = null; tfaShowCodes = codes; await createSession(false); renderAdmin(); return true;
+  }
+  if(id==='tfaCodesDone'){ tfaShowCodes = null; renderAdmin(); return true; }
+  if(id==='tfaNewCodes'){
+    if(!(await askPassword('Создать новые коды восстановления (старые перестанут работать)'))) return true;
+    const t2 = tfa(), codes = newRecoveryCodes(); t2.rec = await Promise.all(codes.map(recHash)); LS.set('tfa', t2);
+    audit('security','Созданы новые коды восстановления'); tfaShowCodes = codes; renderAdmin(); return true;
+  }
+  if(id==='tfaOff'){
+    if(!confirm('Отключить защиту через номер? Вход станет только по паролю.')) return true;
+    if(!(await askPassword('Отключить защиту через номер телефона'))) return true;
+    LS.set('tfa', {on:false}); audit('alert','Защита через номер отключена'); await createSession(false); renderAdmin(); return true;
+  }
+  if(t.dataset.tdel){ if(confirm('Удалить обращение?')){ const k = tickets.splice(+t.dataset.tdel, 1)[0]; LS.set('tickets', tickets); audit('help', 'Удалено обращение '+(k&&k.id)); renderAdmin(); } return true; }
+  return false;
+}
+function aTickets(){
+  $('abody').innerHTML = `<div class="panel"><h3>🆘 Обращения покупателей (${tickets.length})</h3>
+    ${tickets.length ? `<table><tr><th>№ / дата</th><th>Клиент</th><th>Телефон</th><th>Тема</th><th>Сообщение</th><th>Статус</th><th></th></tr>
+    ${tickets.map((k,i)=>`<tr><td>${esc(k.id)}<br><small>${esc(k.date)}</small></td><td>${esc(k.name)}</td><td>${esc(fmtPhone(k.phone))}</td><td>${esc(k.topic)}</td>
+      <td style="white-space:normal;min-width:240px">${esc(k.text)}${k.order?`<br><small>Заказ: ${esc(k.order)}</small>`:''}</td>
+      <td><select data-tstatus="${i}">${['Новое','В работе','Решено'].map(s=>`<option ${k.status===s?'selected':''}>${s}</option>`).join('')}</select></td>
+      <td><button class="btn d" data-tdel="${i}">Удалить</button></td></tr>`).join('')}</table>`
+    : `<div class="note">Обращений пока нет. Покупатели пишут через меню ⋮ → «Написать нам».</div>`}</div>`;
+}
+
+/* =====================================================================
+   СИСТЕМА ПОМОЩИ
+   ===================================================================== */
+function faqList(){
+  const ex = instCalc(100000, maxTerm());
+  return [
+    ['🛒 Как оформить заказ?', 'Нажмите «В корзину» на товаре → откройте «Корзину» вверху → укажите имя, телефон, город и способ оплаты → «Оформить заказ». Мы позвоним, чтобы подтвердить заказ и время доставки.'],
+    ['💳 Как работает рассрочка?', `Сроки: ${settings.terms.join(', ')} месяцев. Наценка — ${settings.rate}% за каждый месяц. Пример: товар за 100 000 ₸ на ${maxTerm()} мес — ${fmt(ex.month)} в месяц, итого ${fmt(ex.total)}. Выберите срок в карточке товара или в корзине.`],
+    ['🚚 Доставка', 'По Алматы и Астане — обычно 1 день, по Казахстану — 2–5 дней. Точный срок и стоимость доставки оператор назовёт при звонке.'],
+    ['💰 Способы оплаты', 'Kaspi.kz, банковской картой при получении, наличными или в рассрочку.'],
+    ['🛡 Гарантия', 'На технику действует официальная гарантия производителя (обычно 1 год). Сохраняйте чек и коробку.'],
+    ['↩ Обмен и возврат', 'По закону РК «О защите прав потребителей». Обычно исправный товар можно обменять или вернуть в течение 14 дней, если он не использовался и сохранены упаковка и чек. Если товар с браком — ремонт, замена или возврат денег по гарантии. Точные условия уточните у оператора.'],
+    ['📁 Где посмотреть характеристики?', 'Откройте товар и выберите вкладку «📁 Характеристики» — там экран, память, камеры, батарея, вес и другое.'],
+    ['⭐ Как оставить отзыв?', 'Откройте товар → вкладка «💬 Отзывы». Можно поставить звёзды, написать комментарий и добавить фото. Правила: один отзыв на товар, без ссылок, телефонов и грубых слов. Если вы покупали товар у нас, отзыв получит отметку «✔ Покупатель».'],
+    ['📦 Как узнать, где мой заказ?', 'Позвоните нам или напишите во вкладке «✉ Написать нам», указав номер заказа (начинается с буквы Z).'],
+    ['🔒 Безопасность покупателя', 'Мы НИКОГДА не просим по телефону код из SMS, пароль от Kaspi, CVV или полный номер карты. Если кто‑то просит — это мошенники, положите трубку и сообщите нам.']
+  ];
+}
+function contactsHTML(){
+  const wa = (shopInfo.wa||'').replace(/\D/g,'');
+  return `<div class="contacts">
+    ${shopInfo.phone ? `<a href="tel:${esc(shopInfo.phone.replace(/[^\d+]/g,''))}">📞 ${esc(shopInfo.phone)}</a>` : ''}
+    ${wa ? `<a href="https://wa.me/${wa}" target="_blank" rel="noopener noreferrer">💬 WhatsApp</a>` : ''}
+    <span>🕘 ${esc(shopInfo.hours)}</span><span>📍 ${esc(shopInfo.addr)}</span></div>`;
+}
+function adminHelpHTML(){
+  const items = [
+    ['🔐 Как войти в админку', 'Покупатели не видят кнопок админки. Чтобы войти: быстро нажмите 3 раза на логотип IBRAT MARKET, или нажмите Ctrl+Shift+A, или допишите #admin в конец адреса → пароль. Если включена защита через номер — дальше последние 4 цифры номера и код из приложения Authenticator.'],
+    ['➕ Как добавить товар', 'Меню ⋮ → «Добавить товар». Обязательно: название и цена. Можно сразу загрузить фото и вставить характеристики.'],
+    ['🖼 Фото товара', 'На витрине «✎ Изменить» → блок «Фото товара». До 10 фото с подписями (Спереди, Сзади, Коробка…). ★ — главное фото, ◀ ▶ — порядок, 🔄 — заменить.'],
+    ['💰 Цены', 'Быстро — оранжевое поле «Цена ₸» прямо под товаром. Сайт предупредит, если цена ниже закупки или меняется больше чем на 50%.'],
+    ['📁 Характеристики', '«✎ Изменить» → «Полные характеристики». Строка «# Экран» — заголовок, «Диагональ: 6.7"» — строка таблицы. Сохраняются навсегда.'],
+    ['📱 Защита через номер', 'Вкладка «🛡 Безопасность» → введите номер → добавьте ключ в Google Authenticator → введите код. Сохраните коды восстановления!'],
+    ['⚠ «Подпись цен нарушена»', 'Значит, цены изменили не через админку. Проверьте цены во вкладке «Товары и цены», потом «🛡 Безопасность» → «Я проверил — подтвердить».'],
+    ['💾 Резервная копия', '«⚙ Настройки» → «Скачать данные». Делайте раз в неделю — данные хранятся только в этом браузере.'],
+    ['🆘 Обращения', 'Вопросы покупателей приходят во вкладку «🆘 Обращения». Меняйте статус: Новое → В работе → Решено.']
+  ];
+  return items.map(([q,a])=>`<details class="faq"><summary>${q}</summary><div>${a}</div></details>`).join('');
+}
+function openHelp(tab){
+  if(tab) helpTab = tab; if(helpTab==='admin' && !adminOK) helpTab = 'faq';
+  editingId = null; viewId = null;
+  const tabs = [['faq','📖 Частые вопросы'],['contact','✉ Написать нам']].concat(adminOK ? [['admin','🛠 Для владельца']] : []);
+  let body = '';
+  if(helpTab==='faq') body = `${contactsHTML()}
+    <input id="helpQ" placeholder="🔍 Поиск по вопросам: доставка, рассрочка, возврат…" style="width:100%;padding:10px;border:1px solid var(--line);border-radius:10px;margin-bottom:12px">
+    <div id="faqList">${faqList().map(([q,a])=>`<details class="faq"><summary>${q}</summary><div>${esc(a)}</div></details>`).join('')}</div>
+    <div class="note" id="faqEmpty" style="display:none">Ничего не нашли — <a href="#" data-htab="contact">напишите нам</a>.</div>`;
+  else if(helpTab==='contact') body = `${contactsHTML()}<div class="hform">
+    <input id="hName" placeholder="Ваше имя" maxlength="40">
+    <input id="hPhone" placeholder="Телефон +7 7XX XXX XX XX" inputmode="tel">
+    <select id="hTopic"><option>Вопрос о товаре</option><option>Мой заказ</option><option>Рассрочка</option><option>Гарантия / возврат</option><option>Другое</option></select>
+    <input id="hOrder" placeholder="Номер заказа (если есть), например Z1234567" maxlength="12">
+    <textarea id="hText" rows="4" maxlength="1000" placeholder="Опишите вопрос"></textarea>
+    <input id="hWebsite" class="hp" tabindex="-1" autocomplete="off" aria-hidden="true">
+    <button class="btn p" id="hSend">Отправить</button>
+    <div class="note">Мы перезвоним в рабочее время. Не пишите сюда данные карты и коды из SMS.</div></div>`;
+  else body = adminHelpHTML();
+  $('modal').innerHTML = `<div class="dhead"><h3>❓ Центр помощи</h3><button class="x" data-close>×</button></div>
+    <div class="ptabs">${tabs.map(([k,v])=>`<button data-htab="${k}" class="${helpTab===k?'on':''}">${v}</button>`).join('')}</div>
+    <div class="revs">${body}</div>`;
+  show('modal');
+}
+document.addEventListener('click', e => {
+  const t = e.target.closest('[data-htab],#hSend'); if(!t) return;
+  if(t.dataset.htab){ e.preventDefault(); openHelp(t.dataset.htab); return; }
+  const name = $('hName').value.trim().replace(/\s+/g,' '), phone = normPhone($('hPhone').value), text = $('hText').value.trim(), order = $('hOrder').value.trim().toUpperCase();
+  if($('hWebsite').value){ audit('alert','Бот: заполнено скрытое поле в обращении'); return toast('Сообщение отклонено'); }
+  if(!validName(name)) return toast('Имя: только буквы, от 2 до 40 символов');
+  if(!phone) return toast('Телефон в формате +7 7XX XXX XX XX');
+  if(order && !/^Z\d{7}$/.test(order)) return toast('Номер заказа вида Z1234567');
+  const prob = textProblem(text, 10); if(prob) return toast(prob);
+  const now = Date.now(), times = (LS.get('tickTimes', [])||[]).filter(x => now - x < 36e5);
+  if(times.length >= LIMITS.ticketsPerHour){ audit('warn','Превышен лимит обращений с одного устройства'); return toast('Слишком много сообщений. Попробуйте через час или позвоните нам'); }
+  const k = {id:'T'+now.toString().slice(-6), date: today(), name, phone, topic: $('hTopic').value, order, text, status:'Новое'};
+  tickets.unshift(k); if(tickets.length > 300) tickets.length = 300; LS.set('tickets', tickets);
+  times.push(now); LS.set('tickTimes', times); audit('help', `Новое обращение ${k.id}: ${k.topic}`);
+  hideAll(); toast(`Обращение ${k.id} принято. Мы свяжемся с вами!`);
+});
+document.addEventListener('input', e => {
+  if(e.target.id !== 'helpQ') return;
+  const q = e.target.value.trim().toLowerCase(); let n = 0;
+  document.querySelectorAll('#faqList .faq').forEach(d => { const hit = !q || d.textContent.toLowerCase().includes(q); d.style.display = hit ? '' : 'none'; if(hit){ n++; if(q) d.open = true; } });
+  $('faqEmpty').style.display = n ? 'none' : '';
+});
+
+/* --- Автовыход при бездействии и проверка сессии --- */
+let lastTouch = 0;
+['click','keydown','scroll','touchstart'].forEach(ev => document.addEventListener(ev, () => { if(adminOK && Date.now() - lastTouch > 15000){ lastTouch = Date.now(); touchSession(); } }, {passive:true}));
+setInterval(async () => {
+  if(!adminOK || await verifySession()) return;
+  adminOK = false; LS.del('sess'); reauthUntil = 0;
+  audit('security','Автовыход: сессия истекла или не было активности');
+  if(isAdm()) renderAdmin(); else { hideAll(); renderGrid(); }
+  renderMenu(); toast('Сессия завершена — войдите снова');
+}, 20000);
+/* --- Если страницу открыли внутри чужого сайта (кликджекинг) --- */
+if(window.top !== window.self){ try{ document.body.insertAdjacentHTML('afterbegin', '<div class="alertbox" style="margin:0;border-radius:0">⚠ Магазин открыт внутри другого сайта. Для безопасности откройте его напрямую.</div>'); }catch(e){} }
+
+// Секретный вход: #admin в адресе или тройной клик по логотипу
+let clicks=0, ct;
+$('logo').addEventListener('click', () => { clicks++; clearTimeout(ct); ct=setTimeout(()=>clicks=0,600); if(clicks>=3){ clicks=0; enterAdmin(); } });
+function route(){ if(location.hash==='#admin') enterAdmin(); }
+// Скрытый вход для владельца: Ctrl+Shift+A
+document.addEventListener('keydown', e => { if(e.ctrlKey && e.shiftKey && (e.code==='KeyA')){ e.preventDefault(); enterAdmin(); } });
+window.addEventListener('hashchange', route);
+
+LS.del('logged');   // старый небезопасный флаг входа больше не используется
+sanitizeCart();
+renderCats(); renderGrid(); renderCart(); renderMenu(); route();
+verifySession(true).then(async ok => {
+  if(ok){ adminOK = true; touchSession(); renderGrid(); renderMenu(); if(isAdm()) renderAdmin(); }
+  else LS.del('sess');
+  await checkIntegrity();
+  if(adminOK && isAdm()) renderAdmin();
+});
+</script>
+</body>
+</html>
